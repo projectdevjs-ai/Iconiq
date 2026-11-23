@@ -70,7 +70,7 @@ function DetailBody({ variantId: initial }: { variantId: string }) {
 
       <div className="wrap-row" style={{ justifyContent: 'center', marginTop: 18 }}>
         <button className="btn sm" onClick={() => { sfx.tap(); setShow3d(true); }}>🧊 Vue 3D</button>
-        {owned && <button className="btn ghost sm" onClick={() => shareCard(variantId, best.serial)}>📤 Partager</button>}
+        {owned && !import.meta.env.VITE_EMBED && <button className="btn ghost sm" onClick={() => shareCard(variantId, best.serial)}>📤 Partager</button>}
         {spare && <button className="btn ghost sm" onClick={() => recycleCard(spare.uid)}>♻️ Recycler 1 double (+{r.recycle} ✦)</button>}
         <button className="btn ghost sm" disabled={profile.shards < r.craft} onClick={doCraft}>⚒️ Fabriquer ({r.craft.toLocaleString('fr-FR')} ✦)</button>
       </div>

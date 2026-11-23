@@ -52,8 +52,8 @@ export const useGame = create<State>((set, get) => {
     backend: null,
     profile: null,
     cards: [],
-    route: routeFromPath(location.pathname).route,
-    routeParam: routeFromPath(location.pathname).param,
+    route: import.meta.env.VITE_EMBED ? 'home' : routeFromPath(location.pathname).route,
+    routeParam: import.meta.env.VITE_EMBED ? null : routeFromPath(location.pathname).param,
     opening: null,
     toasts: [],
     busy: false,
@@ -70,7 +70,7 @@ export const useGame = create<State>((set, get) => {
     },
     go(route, param = null) {
       const path = PATHS[route] + (param ? '/' + encodeURIComponent(param) : '');
-      if (location.pathname !== path) history.pushState(null, '', path);
+      if (!import.meta.env.VITE_EMBED && location.pathname !== path) { try { history.pushState(null, '', path); } catch { /* */ } }
       const apply = () => set({ route, routeParam: param });
       const d = document as any;
       if (d.startViewTransition && !matchMedia('(prefers-reduced-motion: reduce)').matches) d.startViewTransition(apply);

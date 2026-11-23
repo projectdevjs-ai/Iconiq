@@ -1,8 +1,14 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import { VitePWA } from 'vite-plugin-pwa';
+import { viteSingleFile } from 'vite-plugin-singlefile';
 
-export default defineConfig({
+export default defineConfig(({ mode }) => mode === 'embed' ? {
+  // Version « un seul fichier » (démo jouable, mode local uniquement)
+  plugins: [react(), viteSingleFile()],
+  define: { 'import.meta.env.VITE_EMBED': '"1"' },
+  build: { outDir: 'dist-embed', target: 'es2020' },
+} : {
   plugins: [
     react(),
     VitePWA({

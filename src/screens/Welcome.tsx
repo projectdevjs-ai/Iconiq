@@ -55,10 +55,10 @@ export function Welcome() {
       <div style={{ width: '100%', maxWidth: 380, marginTop: 28, display: 'grid', gap: 10 }}>
         {step === 'intro' ? (
           <>
-            <button className="btn block" disabled={!onlineAvailable} onClick={() => { sfx.tap(); setStep('auth'); }}>🌐 Jouer en ligne</button>
-            {!onlineAvailable && <p className="sub" style={{ fontSize: 12, textAlign: 'center' }}>Serveur non configuré (voir README).</p>}
-            <button className="btn ghost block" onClick={() => { sfx.tap(); start('local'); }}>📱 Jouer en local (hors-ligne)</button>
-            <p className="sub" style={{ fontSize: 11, textAlign: 'center' }}>Le mode local a sa propre sauvegarde, séparée du compte en ligne.</p>
+            {!import.meta.env.VITE_EMBED && <button className="btn block" disabled={!onlineAvailable} onClick={() => { sfx.tap(); setStep('auth'); }}>🌐 Jouer en ligne</button>}
+            {!onlineAvailable && !import.meta.env.VITE_EMBED && <p className="sub" style={{ fontSize: 12, textAlign: 'center' }}>Serveur non configuré (voir README).</p>}
+            <button className="btn ghost block" onClick={() => { sfx.tap(); start('local'); }}>{import.meta.env.VITE_EMBED ? '▶ Jouer (version de test)' : '📱 Jouer en local (hors-ligne)'}</button>
+            <p className="sub" style={{ fontSize: 11, textAlign: 'center' }}>{import.meta.env.VITE_EMBED ? 'Version de test avec des personnages d’exemple. Progression sauvegardée sur cet appareil.' : 'Le mode local a sa propre sauvegarde, séparée du compte en ligne.'}</p>
           </>
         ) : (
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} style={{ display: 'grid', gap: 10 }}>

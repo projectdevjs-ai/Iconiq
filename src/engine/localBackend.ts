@@ -44,12 +44,12 @@ export class LocalBackend implements Backend {
 
   private persist() {
     const snap = structuredClone(this.save);
-    this.queue = this.queue.then(() => set(KEY, snap)); // autosave séquentiel
+    this.queue = this.queue.then(() => set(KEY, snap)).catch(() => { /* stockage indisponible */ }); // autosave séquentiel
     return this.queue;
   }
 
   async load() {
-    this.save = ((await get(KEY)) as Save | undefined) ?? fresh();
+    try { this.save = ((await get(KEY)) as Save | undefined) ?? fresh(); } catch { this.save = fresh(); }
     return { profile: { ...this.save.profile }, cards: [...this.save.cards] };
   }
 
