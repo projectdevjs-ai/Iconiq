@@ -32,6 +32,18 @@ on conflict (id) do update set gems = excluded.gems, price_cents = excluded.pric
 insert into gem_bundles values ('gems_xl', 3300, 4999, 'Trésor')
 on conflict (id) do update set gems = excluded.gems, price_cents = excluded.price_cents, label = excluded.label;
 update card_variants set active = false;
+insert into characters values ('toti', 'Toti Pro', 'Rappeur freestyler. Il erre dans sa caravane en crachant des freestyles légendaires.') on conflict (id) do update set name = excluded.name, bio = excluded.bio;
+insert into card_variants values ('toti-freestyler', 'toti', 'commune', 'Rappeur Freestyler', true)
+on conflict (id) do update set character_id = excluded.character_id, rarity = excluded.rarity, title = excluded.title, active = true;
+insert into card_variants values ('toti-ombre', 'toti', 'rare', 'Rappeur de l’Ombre', true)
+on conflict (id) do update set character_id = excluded.character_id, rarity = excluded.rarity, title = excluded.title, active = true;
+insert into card_variants values ('toti-sage', 'toti', 'epique', 'Version Sage ?', true)
+on conflict (id) do update set character_id = excluded.character_id, rarity = excluded.rarity, title = excluded.title, active = true;
+insert into characters values ('cliffouman', 'Cliffouman', 'Le Brad Pitt des voyageurs. Tyler Durden, Snatch, la pointe de l’épée.') on conflict (id) do update set name = excluded.name, bio = excluded.bio;
+insert into card_variants values ('cliffouman-solo', 'cliffouman', 'peu_commune', 'Le Brad Pitt des voyageurs', true)
+on conflict (id) do update set character_id = excluded.character_id, rarity = excluded.rarity, title = excluded.title, active = true;
+insert into card_variants values ('cliffouman-racli', 'cliffouman', 'legendaire', 'Cliffouman et sa Racli', true)
+on conflict (id) do update set character_id = excluded.character_id, rarity = excluded.rarity, title = excluded.title, active = true;
 insert into characters values ('patron', 'Le Patron', 'Tient le comptoir depuis toujours. Connaît tous les secrets du quartier.') on conflict (id) do update set name = excluded.name, bio = excluded.bio;
 insert into card_variants values ('patron-c', 'patron', 'commune', 'Derrière le comptoir', true)
 on conflict (id) do update set character_id = excluded.character_id, rarity = excluded.rarity, title = excluded.title, active = true;

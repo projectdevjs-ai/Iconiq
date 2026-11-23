@@ -1,0 +1,10 @@
+# Convertit dist-embed/index.html en page « artifact » (sans <html>/<head>/<body>)
+import re, sys
+s = open('dist-embed/index.html').read()
+s = re.sub(r'<!doctype html>\s*', '', s, flags=re.I)
+for t in ['<html lang="fr">', '</html>', '<head>', '</head>', '<body>', '</body>']: s = s.replace(t, '')
+s = re.sub(r'<meta charset="UTF-8" />\s*', '', s)
+s = re.sub(r'<meta name="viewport"[^>]*>\s*', '', s)
+s = re.sub(r'<link rel="(apple-touch-icon|icon)"[^>]*>\s*', '', s)
+s = s.replace('<title>ICONIQ</title>', '')
+open(sys.argv[1], 'w').write('<title>ICONIQ</title>\n' + s.strip() + '\n')

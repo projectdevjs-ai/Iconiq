@@ -14,6 +14,8 @@ export interface Variant {
   rarity: RarityId;
   title: string; // nom de la version (ex: « Édition Nuit Blanche »)
   image?: string;
+  /** l'image est déjà une carte complète (cadre + textes) : on n'ajoute pas notre cadre */
+  fullCard?: boolean;
   flavor?: string;
 }
 
@@ -24,8 +26,28 @@ export interface Character {
   variants: Variant[];
 }
 
-// Personnages temporaires (archétypes) — à remplacer par les vrais.
 export const CHARACTERS: Character[] = [
+  // ── Vrais personnages ──────────────────────────────
+  {
+    id: 'toti',
+    name: 'Toti Pro',
+    bio: 'Rappeur freestyler. Il erre dans sa caravane en crachant des freestyles légendaires.',
+    variants: [
+      { id: 'toti-freestyler', rarity: 'commune', title: 'Rappeur Freestyler', image: 'cards/toti-freestyler.webp', fullCard: true },
+      { id: 'toti-ombre', rarity: 'rare', title: 'Rappeur de l’Ombre', image: 'cards/toti-ombre.webp', fullCard: true },
+      { id: 'toti-sage', rarity: 'epique', title: 'Version Sage ?', image: 'cards/toti-sage.webp', fullCard: true },
+    ],
+  },
+  {
+    id: 'cliffouman',
+    name: 'Cliffouman',
+    bio: 'Le Brad Pitt des voyageurs. Tyler Durden, Snatch, la pointe de l’épée.',
+    variants: [
+      { id: 'cliffouman-solo', rarity: 'peu_commune', title: 'Le Brad Pitt des voyageurs', image: 'cards/cliffouman.webp', fullCard: true },
+      { id: 'cliffouman-racli', rarity: 'legendaire', title: 'Cliffouman et sa Racli', image: 'cards/cliffouman-racli.webp', fullCard: true },
+    ],
+  },
+  // ── Personnages d'exemple (à retirer quand il y aura assez de vrais) ──
   {
     id: 'patron',
     name: 'Le Patron',

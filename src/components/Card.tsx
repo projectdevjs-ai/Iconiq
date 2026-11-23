@@ -33,6 +33,15 @@ export const Card = memo(function Card({ variantId, serial, interactive = true, 
       role={onClick ? 'button' : undefined}
       aria-label={`${v.characterName} — ${v.title} (${r.label})`}
     >
+      {v.fullCard ? (
+        <div className="tcg-inner full">
+          <img className="tcg-art" src={cardImage(v)} alt="" loading="lazy" decoding="async" draggable={false} />
+          <div className="tcg-shine" />
+          <div className="tcg-sparkle" />
+          <div className="tcg-glare" />
+          {serial != null && <span className="tcg-serial-badge">#{serial}</span>}
+        </div>
+      ) : (
       <div className="tcg-inner">
         <img className="tcg-art" src={cardImage(v)} alt="" loading="lazy" decoding="async" draggable={false} />
         <div className="tcg-shine" />
@@ -49,6 +58,7 @@ export const Card = memo(function Card({ variantId, serial, interactive = true, 
           <div className="tcg-gems">{Array.from({ length: r.rank + 1 }, (_, i) => <i key={i} />)}</div>
         </div>
       </div>
+      )}
       {isNew && <span className="tcg-new">NEW</span>}
       {count != null && count > 1 && <span className="tcg-count">×{count}</span>}
     </div>

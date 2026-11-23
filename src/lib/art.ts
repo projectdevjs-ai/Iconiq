@@ -11,7 +11,7 @@ function hash(s: string) {
 }
 
 export function cardImage(v: FlatVariant): string {
-  if (v.image) return v.image;
+  if (v.image) return /^(https?:|data:|blob:)/.test(v.image) ? v.image : import.meta.env.BASE_URL + v.image.replace(/^\//, '');
   const hit = cache.get(v.id);
   if (hit) return hit;
   const r = RARITY[v.rarity];

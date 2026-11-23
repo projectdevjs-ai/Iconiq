@@ -5,6 +5,7 @@ import { viteSingleFile } from 'vite-plugin-singlefile';
 
 export default defineConfig(({ mode }) => mode === 'embed' ? {
   // Version « un seul fichier » (démo jouable, mode local uniquement)
+  base: './',
   plugins: [react(), viteSingleFile()],
   define: { 'import.meta.env.VITE_EMBED': '"1"' },
   build: { outDir: 'dist-embed', target: 'es2020' },

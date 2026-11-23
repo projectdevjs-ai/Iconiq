@@ -6,7 +6,7 @@ import { RARITY } from '../config/game';
 import { VARIANT_BY_ID } from '../data/catalog';
 import { drawCard } from '../lib/cardCanvas';
 
-const W = 2.5, H = 3.5, D = 0.03;
+const W = 2.4, H = 3.6, D = 0.03;
 
 async function faceTexture(variantId: string, serial: number | null) {
   const t = new THREE.CanvasTexture(await drawCard(variantId, serial));
@@ -17,19 +17,19 @@ async function faceTexture(variantId: string, serial: number | null) {
 
 function backTexture() {
   const c = document.createElement('canvas');
-  c.width = 750; c.height = 1050;
+  c.width = 750; c.height = 1125;
   const g = c.getContext('2d')!;
   for (let i = 0; i < 36; i++) {
     g.fillStyle = i % 2 ? '#1a1430' : '#120e22';
-    g.beginPath(); g.moveTo(375, 525);
-    g.arc(375, 525, 1000, (i / 36) * Math.PI * 2, ((i + 1) / 36) * Math.PI * 2); g.fill();
+    g.beginPath(); g.moveTo(375, 562);
+    g.arc(375, 562, 1000, (i / 36) * Math.PI * 2, ((i + 1) / 36) * Math.PI * 2); g.fill();
   }
-  const rg = g.createRadialGradient(375, 525, 0, 375, 525, 420);
+  const rg = g.createRadialGradient(375, 562, 0, 375, 562, 420);
   rg.addColorStop(0, 'rgba(139,92,255,.75)'); rg.addColorStop(1, 'rgba(139,92,255,0)');
-  g.fillStyle = rg; g.fillRect(0, 0, 750, 1050);
-  g.strokeStyle = 'rgba(255,255,255,.3)'; g.lineWidth = 6; g.strokeRect(50, 50, 650, 950);
+  g.fillStyle = rg; g.fillRect(0, 0, 750, 1125);
+  g.strokeStyle = 'rgba(255,255,255,.3)'; g.lineWidth = 6; g.strokeRect(50, 50, 650, 1025);
   g.font = '800 96px Unbounded, system-ui, sans-serif'; g.textAlign = 'center'; g.fillStyle = '#fff';
-  g.shadowColor = '#8b5cff'; g.shadowBlur = 40; g.fillText('ICONIQ', 375, 560);
+  g.shadowColor = '#8b5cff'; g.shadowBlur = 40; g.fillText('ICONIQ', 375, 597);
   const t = new THREE.CanvasTexture(c);
   t.colorSpace = THREE.SRGBColorSpace;
   return t;
