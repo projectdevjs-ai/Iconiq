@@ -44,6 +44,11 @@ insert into card_variants values ('cliffouman-solo', 'cliffouman', 'peu_commune'
 on conflict (id) do update set character_id = excluded.character_id, rarity = excluded.rarity, title = excluded.title, active = true;
 insert into card_variants values ('cliffouman-racli', 'cliffouman', 'legendaire', 'Cliffouman et sa Racli', true)
 on conflict (id) do update set character_id = excluded.character_id, rarity = excluded.rarity, title = excluded.title, active = true;
+insert into card_variants values ('cliffouman-gold', 'cliffouman', 'mythique', 'Le Number One · Gold Edition', true)
+on conflict (id) do update set character_id = excluded.character_id, rarity = excluded.rarity, title = excluded.title, active = true;
+insert into characters values ('david-lopez', 'David Lopez', 'Gitan très très énervé. Constamment, tout le temps. Ne le cherchez jamais.') on conflict (id) do update set name = excluded.name, bio = excluded.bio;
+insert into card_variants values ('david-lopez-fureur', 'david-lopez', 'commune', 'Gitan très très énervé', true)
+on conflict (id) do update set character_id = excluded.character_id, rarity = excluded.rarity, title = excluded.title, active = true;
 insert into characters values ('patron', 'Le Patron', 'Tient le comptoir depuis toujours. Connaît tous les secrets du quartier.') on conflict (id) do update set name = excluded.name, bio = excluded.bio;
 insert into card_variants values ('patron-c', 'patron', 'commune', 'Derrière le comptoir', true)
 on conflict (id) do update set character_id = excluded.character_id, rarity = excluded.rarity, title = excluded.title, active = true;

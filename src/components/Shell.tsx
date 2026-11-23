@@ -2,6 +2,7 @@ import { AnimatePresence, motion, LayoutGroup } from 'framer-motion';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import { sfx } from '../lib/fx';
+import { toggleFullscreen } from '../lib/fullscreen';
 import { useGame, type Route } from '../store/game';
 
 function useCountUp(value: number) {
@@ -42,11 +43,17 @@ export function TopBar({ unread, onLogoTap }: { unread: number; onLogoTap(): voi
   return (
     <header className="topbar">
       <button className="logo" onClick={onLogoTap} aria-label="ICONIQ">ICONIQ</button>
-      {backend?.mode === 'local' && <span className="pill" style={{ fontSize: 10, height: 22, color: 'var(--gold)' }}>LOCAL</span>}
+      {backend?.mode === 'local' && !import.meta.env.VITE_EMBED && <span className="pill" style={{ fontSize: 10, height: 22, color: 'var(--gold)' }}>LOCAL</span>}
       <div className="spacer" />
       <Currency icon="🪙" value={profile.credits} color="var(--gold)" title="Crédits" />
       <Currency icon="✦" value={profile.shards} color="var(--accent-2)" title="Éclats" />
       {backend?.mode === 'online' && <Currency icon="💎" value={profile.gems} color="#ff6bd6" title="Gemmes" />}
+      <button className="icon-btn" aria-label="Plein écran" onClick={async () => {
+        sfx.tap();
+        if (!(await toggleFullscreen())) useGame.getState().toast(/iPhone|iPad/.test(navigator.userAgent)
+          ? 'Sur iPhone, le plein écran s’obtient en installant l’app (Partager → Sur l’écran d’accueil) sur la version en ligne.'
+          : 'Plein écran bloqué ici. Ouvre la page dans ton navigateur (Chrome) pour l’activer.');
+      }}>⛶</button>
       <button className="icon-btn" onClick={() => { sfx.tap(); go('profile'); }} aria-label="Profil">
         👤{unread > 0 && <span className="badge-dot">{unread}</span>}
       </button>

@@ -4,6 +4,7 @@ import { Card } from '../components/Card';
 import { GAME } from '../config/game';
 import { VARIANTS } from '../data/catalog';
 import { sfx } from '../lib/fx';
+import { toggleFullscreen } from '../lib/fullscreen';
 import { onlineAvailable, supabase } from '../lib/supabase';
 import { useGame } from '../store/game';
 
@@ -57,7 +58,7 @@ export function Welcome() {
           <>
             {!import.meta.env.VITE_EMBED && <button className="btn block" disabled={!onlineAvailable} onClick={() => { sfx.tap(); setStep('auth'); }}>🌐 Jouer en ligne</button>}
             {!onlineAvailable && !import.meta.env.VITE_EMBED && <p className="sub" style={{ fontSize: 12, textAlign: 'center' }}>Serveur non configuré (voir README).</p>}
-            <button className="btn ghost block" onClick={() => { sfx.tap(); start('local'); }}>{import.meta.env.VITE_EMBED ? '▶ Jouer (version de test)' : '📱 Jouer en local (hors-ligne)'}</button>
+            <button className="btn ghost block" onClick={() => { sfx.tap(); toggleFullscreen(); start('local'); }}>{import.meta.env.VITE_EMBED ? '▶ Jouer (version de test)' : '📱 Jouer en local (hors-ligne)'}</button>
             <p className="sub" style={{ fontSize: 11, textAlign: 'center' }}>{import.meta.env.VITE_EMBED ? 'Version de test avec des personnages d’exemple. Progression sauvegardée sur cet appareil.' : 'Le mode local a sa propre sauvegarde, séparée du compte en ligne.'}</p>
           </>
         ) : (

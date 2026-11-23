@@ -15,7 +15,7 @@ interface Save {
   serials: Record<string, number>;
 }
 
-const KEY = 'iconiq-local-save';
+const KEY = 'iconiq-local-save-v2'; // changer la version = repartir de zéro
 
 function fresh(): Save {
   return {
@@ -51,6 +51,12 @@ export class LocalBackend implements Backend {
   async load() {
     try { this.save = ((await get(KEY)) as Save | undefined) ?? fresh(); } catch { this.save = fresh(); }
     return { profile: { ...this.save.profile }, cards: [...this.save.cards] };
+  }
+
+  async reset() {
+    this.save = fresh();
+    await this.persist();
+    return { profile: { ...this.save.profile }, cards: [] as OwnedCard[] };
   }
 
   async openPack(packId: string, currency: Currency) {

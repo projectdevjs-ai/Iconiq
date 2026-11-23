@@ -29,6 +29,7 @@ interface State {
   craft(variantId: string): Promise<OwnedCard | null>;
   refresh(): Promise<void>;
   setProfile(p: Profile): void;
+  resetLocal(): Promise<void>;
 }
 
 let toastId = 0;
@@ -133,6 +134,12 @@ export const useGame = create<State>((set, get) => {
       } catch { /* hors-ligne : on garde l'état */ }
     },
     setProfile(p) { set({ profile: p }); },
+    async resetLocal() {
+      const b = get().backend;
+      if (!(b instanceof LocalBackend)) return;
+      const { profile, cards } = await b.reset();
+      set({ profile, cards, opening: null });
+    },
   };
 });
 

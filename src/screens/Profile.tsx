@@ -23,6 +23,8 @@ export function Profile({ notifs, onRead }: { notifs: AppNotification[]; onRead(
   const [name, setName] = useState(profile.username);
   const [board, setBoard] = useState<LeaderRow[]>([]);
   const [muted, setMutedS] = useState(isMuted());
+  const [confirmReset, setConfirmReset] = useState(false);
+  const resetLocal = useGame((s) => s.resetLocal);
   const [, force] = useState(0);
   useEffect(() => { const off = onInstallChange(() => force((x) => x + 1)); return () => { off(); }; }, []);
   useEffect(() => { api?.leaderboard().then(setBoard).catch(() => {}); }, [api]);
@@ -101,6 +103,17 @@ export function Profile({ notifs, onRead }: { notifs: AppNotification[]; onRead(
         {!isStandalone() && /iPhone|iPad/.test(navigator.userAgent) && (
           <p className="sub" style={{ fontSize: 13 }}>📲 Sur iPhone : touche Partager puis « Sur l’écran d’accueil » pour installer ICONIQ.</p>
         )}
+        {backend.mode === 'local' && (confirmReset ? (
+          <div className="glass" style={{ padding: 14, display: 'grid', gap: 10 }}>
+            <b>Effacer toutes tes cartes, crédits et éclats de ce mode local ?</b>
+            <div className="row">
+              <button className="btn ghost sm" style={{ flex: 1 }} onClick={() => setConfirmReset(false)}>Annuler</button>
+              <button className="btn danger sm" style={{ flex: 1 }} onClick={async () => { await resetLocal(); setConfirmReset(false); toast('Progression réinitialisée', 'success'); go('home'); }}>Tout effacer</button>
+            </div>
+          </div>
+        ) : (
+          <button className="btn ghost block" onClick={() => setConfirmReset(true)}>🗑️ Réinitialiser ma progression</button>
+        ))}
         <button className="btn danger block" onClick={logout}>{backend.mode === 'online' ? 'Se déconnecter' : 'Quitter le mode local'}</button>
       </div>
       <p className="sub" style={{ textAlign: 'center', fontSize: 11, marginTop: 24 }}>ICONIQ · {backend.mode === 'online' ? 'Sauvegarde serveur automatique' : 'Sauvegarde locale automatique'} · v1.0</p>

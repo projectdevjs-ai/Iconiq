@@ -45,6 +45,15 @@ export const CHARACTERS: Character[] = [
     variants: [
       { id: 'cliffouman-solo', rarity: 'peu_commune', title: 'Le Brad Pitt des voyageurs', image: 'cards/cliffouman.webp', fullCard: true },
       { id: 'cliffouman-racli', rarity: 'legendaire', title: 'Cliffouman et sa Racli', image: 'cards/cliffouman-racli.webp', fullCard: true },
+      { id: 'cliffouman-gold', rarity: 'mythique', title: 'Le Number One · Gold Edition', image: 'cards/cliffouman-gold.webp', fullCard: true },
+    ],
+  },
+  {
+    id: 'david-lopez',
+    name: 'David Lopez',
+    bio: 'Gitan très très énervé. Constamment, tout le temps. Ne le cherchez jamais.',
+    variants: [
+      { id: 'david-lopez-fureur', rarity: 'commune', title: 'Gitan très très énervé', image: 'cards/david-lopez.webp', fullCard: true },
     ],
   },
   // ── Personnages d'exemple (à retirer quand il y aura assez de vrais) ──
