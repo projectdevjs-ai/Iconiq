@@ -48,12 +48,12 @@ export function TopBar({ unread, onLogoTap }: { unread: number; onLogoTap(): voi
       <Currency icon="🪙" value={profile.credits} color="var(--gold)" title="Crédits" />
       <Currency icon="✦" value={profile.shards} color="var(--accent-2)" title="Éclats" />
       {backend?.mode === 'online' && <Currency icon="💎" value={profile.gems} color="#ff6bd6" title="Gemmes" />}
-      <button className="icon-btn" aria-label="Plein écran" onClick={async () => {
+      {!!((document.documentElement as any).requestFullscreen || (document.documentElement as any).webkitRequestFullscreen) && <button className="icon-btn" aria-label="Plein écran" onClick={async () => {
         sfx.tap();
         if (!(await toggleFullscreen())) useGame.getState().toast(/iPhone|iPad/.test(navigator.userAgent)
           ? 'Sur iPhone, le plein écran s’obtient en installant l’app (Partager → Sur l’écran d’accueil) sur la version en ligne.'
           : 'Plein écran bloqué ici. Ouvre la page dans ton navigateur (Chrome) pour l’activer.');
-      }}>⛶</button>
+      }}>⛶</button>}
       <button className="icon-btn" onClick={() => { sfx.tap(); go('profile'); }} aria-label="Profil">
         👤{unread > 0 && <span className="badge-dot">{unread}</span>}
       </button>

@@ -54,8 +54,21 @@ function noise(dur: number, vol = 0.2, hp = 1200, delay = 0) {
 
 export const sfx = {
   tap: () => { tone(880, 0.05, 'triangle', 0.06); haptic(6); },
-  tearTick: () => { noise(0.04, 0.08, 2500); haptic(4); },
-  tear: () => { noise(0.35, 0.35, 900); tone(220, 0.3, 'sawtooth', 0.05, -120); haptic([20, 30, 40]); },
+  /** grain de déchirure : plus le doigt va vite, plus c'est fort ; plus on avance, plus c'est aigu */
+  tearTick: (progress = 0, speed = 1) => {
+    const v = Math.min(0.22, 0.05 + speed * 0.05);
+    noise(0.03 + Math.random() * 0.03, v, 1400 + progress * 2600 + Math.random() * 600);
+    if (Math.random() < 0.35) noise(0.015, v * 0.8, 5000);
+    haptic(speed > 1.5 ? 8 : 4);
+  },
+  /** tension avant l'arrachage (bord du sachet qui résiste) */
+  tearStart: () => { noise(0.08, 0.12, 700); tone(90, 0.12, 'triangle', 0.08, -30); haptic(12); },
+  tear: () => {
+    noise(0.12, 0.45, 600); noise(0.5, 0.3, 1800, 0.05); noise(0.25, 0.25, 4200, 0.02);
+    tone(140, 0.35, 'sawtooth', 0.07, -90); tone(880, 0.6, 'sine', 0.06, 900, 0.08);
+    haptic([35, 25, 60, 20, 18]);
+  },
+  pop: () => { tone(320, 0.18, 'sine', 0.1, 500); noise(0.06, 0.1, 3000); haptic(15); },
   whoosh: () => noise(0.25, 0.12, 400),
   flip: () => { noise(0.08, 0.12, 3000); tone(600, 0.08, 'triangle', 0.05, 300); haptic(10); },
   reveal(rank: number) {

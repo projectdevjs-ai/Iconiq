@@ -9,6 +9,8 @@ export interface ParticlesHandle {
   burst(x: number, y: number, colors: string[], n?: number, speed?: number): void;
   /** confettis tombant du haut */
   confetti(colors: string[], n?: number): void;
+  /** petits bouts de papier/aluminium qui tombent de la déchirure */
+  fibers(x: number, y: number, n?: number, dir?: number): void;
 }
 
 /** Canvas plein écran de particules — ne tourne que s'il y a des particules vivantes. */
@@ -72,6 +74,13 @@ export const Particles = forwardRef<ParticlesHandle>(function Particles(_, ref) 
       for (let i = 0; i < n; i++) {
         const a = Math.random() * Math.PI * 2, s = speed * (0.3 + Math.random() * 0.7);
         ps.current.push({ x, y, vx: Math.cos(a) * s, vy: Math.sin(a) * s, life: 0, max: 40 + Math.random() * 50, size: 1.5 + Math.random() * 3.5, color: colors[i % colors.length], kind: 1, rot: 0, vr: 0 });
+      }
+      kick();
+    },
+    fibers(x, y, n = 4, dir = 0) {
+      const cols = ['#ffffff', '#e8e4f5', '#c9c2e0', '#fff6d6'];
+      for (let i = 0; i < n; i++) {
+        ps.current.push({ x: x + (Math.random() - 0.5) * 6, y, vx: dir * (0.5 + Math.random() * 2) + (Math.random() - 0.5) * 1.5, vy: -1 - Math.random() * 2.5, life: 0, max: 50 + Math.random() * 40, size: 1 + Math.random() * 2, color: cols[i % cols.length], kind: 2, rot: Math.random() * 6, vr: (Math.random() - 0.5) * 0.5 });
       }
       kick();
     },

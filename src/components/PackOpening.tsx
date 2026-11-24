@@ -1,6 +1,7 @@
 import { AnimatePresence, motion, useAnimationControls } from 'framer-motion';
 import { useEffect, useRef, useState, type CSSProperties } from 'react';
-import { PACKS, RARITY } from '../config/game';
+import { PACKS, RARITIES, RARITY } from '../config/game';
+const RARITIES_BY_RANK = Object.fromEntries(RARITIES.map((r) => [r.rank, r]));
 import { VARIANT_BY_ID, cardRatio } from '../data/catalog';
 import { sfx } from '../lib/fx';
 import { useGame } from '../store/game';
@@ -79,6 +80,8 @@ export function PackOpening() {
     begin(p.id, opening.currency);
   };
 
+  // lumière qui fuit du sachet : trahit une Épique ou mieux
+  const leak = best >= 3 ? RARITIES_BY_RANK[best].color : '#d8ecff';
   const glow = phase === 'reveal' && curRarity ? (flipped || rank >= 3 ? curRarity.color : '#8b5cff') : pack.accent;
   const canAgain = opening.currency !== 'daily';
 
@@ -98,7 +101,7 @@ export function PackOpening() {
         {(phase === 'tear' || phase === 'wait') && (
           <motion.div initial={{ y: 200, scale: 0.6, rotate: -8, opacity: 0 }} animate={{ y: 0, scale: 1, rotate: 0, opacity: 1 }} transition={{ type: 'spring', stiffness: 160, damping: 16 }}>
             {!torn ? (
-              <BoosterPack name={opening.currency === 'daily' ? 'Booster du jour' : pack.name} accent={pack.accent} particles={particles} onTorn={() => setTorn(true)} />
+              <BoosterPack name={opening.currency === 'daily' ? 'Booster du jour' : pack.name} accent={pack.accent} glow={leak} particles={particles} onTorn={() => setTorn(true)} />
             ) : (
               <motion.div animate={{ scale: [1, 1.04, 1] }} transition={{ repeat: Infinity, duration: 0.8 }} style={{ width: 'min(70vw,300px)' }}>
                 <CardBack />

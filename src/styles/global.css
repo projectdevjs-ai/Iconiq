@@ -142,7 +142,7 @@ img { -webkit-user-drag: none; user-select: none; }
   background: linear-gradient(135deg, rgba(139, 92, 255, 0.55), rgba(34, 225, 255, 0.3));
   box-shadow: 0 0 24px rgba(139, 92, 255, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.25);
 }
-@media (max-width: 380px) { .dock-item { width: 50px; } .dock-item span { display: none; } }
+@media (max-width: 380px) { .dock-item { width: 46px; } .dock-item span:not(.di) { display: none; } }
 
 /* ── Éléments génériques ─────────────────────────── */
 .h1 { font-family: var(--font-display); font-weight: 800; font-size: clamp(26px, 7vw, 40px); line-height: 1.05; margin: 0 0 6px; letter-spacing: -0.01em; }
@@ -400,7 +400,7 @@ img { -webkit-user-drag: none; user-select: none; }
 
 /* ── Scène d'ouverture ───────────────────────────── */
 .opening { position: fixed; inset: 0; z-index: 120; display: flex; align-items: center; justify-content: center; flex-direction: column; overflow: hidden; touch-action: none; }
-.opening-bg { position: absolute; inset: 0; background: radial-gradient(circle at 50% 45%, color-mix(in srgb, var(--glow, #8b5cff) 30%, transparent), transparent 60%), rgba(3, 2, 8, 0.94); transition: background 0.6s; }
+.opening-bg { position: absolute; inset: 0; background: radial-gradient(circle at 50% 45%, color-mix(in srgb, var(--glow, #8b5cff) 30%, transparent), transparent 60%), rgba(3, 2, 8, 0.97); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); transition: background 0.6s; }
 .rays {
   position: absolute; left: 50%; top: 45%; width: 220vmax; height: 220vmax; transform: translate(-50%, -50%); pointer-events: none;
   background: repeating-conic-gradient(from 0deg, color-mix(in srgb, var(--glow) 55%, transparent) 0deg 4deg, transparent 4deg 16deg);
@@ -454,4 +454,36 @@ body.prism .app { animation: prism 8s linear infinite; }
   position: absolute; left: 50%; bottom: 1.6%; transform: translateX(-50%);
   font-family: var(--font-display); font-weight: 800; font-size: 5cqw; padding: 0.6cqw 2.6cqw; border-radius: 99px;
   background: rgba(0,0,0,.7); color: var(--rg); border: 1px solid var(--rc); text-shadow: 0 0 8px var(--rc);
+}
+
+/* ── Déchirure v2 ───────────────────────────────── */
+.pack { perspective: 900px; }
+.pack-flap { will-change: transform; filter: drop-shadow(0 -6px 10px rgba(0,0,0,.45)); }
+.pack-leak {
+  position: absolute; left: -4%; right: -4%; height: 10%; transform: translateY(-50%);
+  background: radial-gradient(ellipse at 50% 50%, #fff 0%, var(--leak, #fff) 25%, transparent 70%);
+  filter: blur(6px); mix-blend-mode: screen; pointer-events: none; transition: opacity .2s;
+  animation: leak-pulse 0.5s ease-in-out infinite alternate;
+}
+@keyframes leak-pulse { from { filter: blur(6px) brightness(1); } to { filter: blur(9px) brightness(1.5); } }
+.pack-grip {
+  position: absolute; width: 46px; height: 46px; margin: -23px 0 0 -23px; border-radius: 50%; pointer-events: none;
+  background: radial-gradient(circle, rgba(255,255,255,.9), var(--leak, #fff) 35%, transparent 70%);
+  mix-blend-mode: screen; animation: grip 0.6s ease-in-out infinite alternate;
+}
+@keyframes grip { to { transform: scale(1.25); } }
+.pack-dash { animation: dash 1.2s linear infinite; }
+@keyframes dash { to { stroke-dashoffset: -11; } }
+.pack-meter { width: 70%; margin: 22px auto 0; min-height: 20px; }
+.pack-meter .bar { height: 6px; }
+
+.pack-cards { position: absolute; left: 8%; right: 8%; top: 12%; bottom: 4%; }
+.pack-card { position: absolute; inset: 0; filter: drop-shadow(0 10px 18px rgba(0,0,0,.5)); }
+
+.icon-btn, .pill, .logo { flex: none; }
+@media (max-width: 380px) {
+  .topbar { gap: 6px; padding-left: 12px; padding-right: 12px; }
+  .topbar .pill { padding: 0 9px; height: 30px; font-size: 12px; }
+  .topbar .icon-btn { width: 32px; height: 32px; border-radius: 10px; }
+  .logo { font-size: 16px; }
 }
