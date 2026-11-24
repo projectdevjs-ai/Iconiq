@@ -87,6 +87,10 @@ export const sfx = {
   recycle: () => { tone(300, 0.4, 'sine', 0.1, 900); noise(0.3, 0.1, 3000, 0.1); haptic([10, 20, 60]); },
 };
 
+let vib = (() => { try { return localStorage.getItem('iconiq-vibe') !== '0'; } catch { return true; } })();
+export const vibrationOn = () => vib;
+export function setVibration(on: boolean) { vib = on; try { localStorage.setItem('iconiq-vibe', on ? '1' : '0'); } catch { /* */ } }
 export function haptic(p: number | number[]) {
+  if (!vib) return;
   try { navigator.vibrate?.(p); } catch { /* iOS : pas d'API vibration */ }
 }

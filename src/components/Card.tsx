@@ -38,7 +38,7 @@ export const Card = memo(function Card({ variantId, serial, interactive = true, 
     >
       {v.fullCard ? (
         <div className="tcg-inner full">
-          <img className="tcg-art" src={cardImage(v)} alt="" loading="lazy" decoding="async" draggable={false} />
+          {mystery ? <div className="tcg-art tcg-art-hidden" /> : <img className="tcg-art" src={cardImage(v)} alt="" loading="lazy" decoding="async" draggable={false} />}
           <div className="tcg-shine" />
           <div className="tcg-sparkle" />
           <div className="tcg-glare" />

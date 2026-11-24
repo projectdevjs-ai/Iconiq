@@ -6,7 +6,7 @@ import type { Backend, Currency, OwnedCard, PackResult, Profile, Reward } from '
 import { rewardText } from '../engine/rewards';
 import { sfx } from '../lib/fx';
 
-export type Route = 'home' | 'collection' | 'shop' | 'trade' | 'market' | 'battle' | 'profile' | 'showroom';
+export type Route = 'home' | 'collection' | 'shop' | 'trade' | 'market' | 'battle' | 'profile' | 'showroom' | 'friends' | 'settings';
 
 export interface Toast { id: number; text: string; kind: 'info' | 'error' | 'success' }
 
@@ -40,7 +40,7 @@ interface State {
 let toastId = 0;
 const PATHS: Record<Route, string> = {
   home: '/', collection: '/collection', shop: '/shop', trade: '/trade', market: '/market',
-  battle: '/battle', profile: '/profile', showroom: '/showroom',
+  battle: '/battle', profile: '/profile', showroom: '/showroom', friends: '/friends', settings: '/settings',
 };
 
 export function routeFromPath(path: string): { route: Route; param: string | null } {

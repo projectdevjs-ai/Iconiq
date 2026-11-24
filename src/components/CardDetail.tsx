@@ -64,9 +64,9 @@ function DetailBody({ variantId: initial }: { variantId: string }) {
       </div>
       <div style={{ textAlign: 'center' }}>
         <div style={{ color: r.color, fontWeight: 800, letterSpacing: '.15em', fontSize: 12, textTransform: 'uppercase' }}>{r.label}</div>
-        <h2 className="h1" style={{ fontSize: 26, marginTop: 4 }}>{v.characterName}</h2>
+        <h2 className="h1" style={{ fontSize: 26, marginTop: 4 }}>{hidden ? '???' : v.characterName}</h2>
         <p className="sub">{hidden ? '??? · Carte mystère' : v.title}</p>
-        <p className="sub" style={{ marginTop: 10, fontStyle: 'italic' }}>{ch.bio}</p>
+        <p className="sub" style={{ marginTop: 10, fontStyle: 'italic' }}>{hidden ? 'Obtiens-la pour découvrir qui se cache derrière…' : ch.bio}</p>
       </div>
 
       <div className="wrap-row" style={{ justifyContent: 'center', marginTop: 18 }}>
@@ -95,13 +95,15 @@ function DetailBody({ variantId: initial }: { variantId: string }) {
         </div>
       )}
 
-      <h3 className="h2">Toutes les versions de {ch.name}</h3>
-      <div className="chips" style={{ gap: 12 }}>
+      <h3 className="h2">{hidden ? 'Toutes les versions' : `Toutes les versions de ${ch.name}`}</h3>
+      <div className="versions">
         {ch.variants.map((x) => {
           const has = cards.some((c) => c.variantId === x.id);
+          const myst = !has && isMysteryRarity(x.rarity);
           return (
-            <button key={x.id} onClick={() => { sfx.tap(); setVariantId(x.id); }} style={{ width: 92, flex: 'none', outline: x.id === variantId ? `2px solid ${RARITY[x.rarity].color}` : 'none', borderRadius: 8 }}>
-              <Card variantId={x.id} dim={!has && !isMysteryRarity(x.rarity)} mystery={!has && isMysteryRarity(x.rarity)} interactive={false} />
+            <button key={x.id} className={`version ${x.id === variantId ? 'on' : ''}`} style={{ '--rc': RARITY[x.rarity].color } as React.CSSProperties} onClick={() => { sfx.tap(); setVariantId(x.id); }}>
+              <Card variantId={x.id} dim={!has && !myst} mystery={myst} interactive={false} />
+              <span>{RARITY[x.rarity].label}</span>
             </button>
           );
         })}

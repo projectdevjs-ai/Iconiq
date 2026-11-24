@@ -120,7 +120,13 @@ export interface OnlineFeatures {
   createInvite(hours: number, note?: string): Promise<string>;
   listInvites(): Promise<Invite[]>;
   revokeInvite(code: string): Promise<void>;
+  friends(): Promise<Friend[]>;
+  addFriend(username: string): Promise<'sent' | 'accepted'>;
+  respondFriend(id: string, accept: boolean): Promise<void>;
+  removeFriend(id: string): Promise<void>;
+  deleteAccount(): Promise<void>;
 }
+export interface Friend { id: string; status: 'pending' | 'accepted'; direction: 'in' | 'out'; username: string; packsOpened: number; unique: number; since: string }
 export interface Invite { code: string; note: string | null; createdAt: string; expiresAt: string; usedBy: string | null; usedAt: string | null; revoked: boolean }
 
 export interface FeedItem { username: string; variantId: string; serial: number | null; createdAt: string }

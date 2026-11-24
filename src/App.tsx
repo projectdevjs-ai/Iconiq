@@ -19,6 +19,8 @@ import { Profile } from './screens/Profile';
 import { Shop } from './screens/Shop';
 import { Trade } from './screens/Trade';
 import { Welcome } from './screens/Welcome';
+import { Friends } from './screens/Friends';
+import { Settings, applyReduceMotion } from './screens/Settings';
 import { useGame } from './store/game';
 
 function useBoot() {
@@ -69,6 +71,7 @@ export default function App() {
   const [notifs, setNotifs] = useState<AppNotification[]>([]);
   const taps = useRef<number[]>([]);
   const [intro, setIntro] = useState(() => !introSeen());
+  useEffect(applyReduceMotion, []);
   useEffect(() => {
     const once = () => { resumeMusicIfWanted(); removeEventListener('pointerdown', once); };
     addEventListener('pointerdown', once);
@@ -143,6 +146,8 @@ export default function App() {
             {route === 'market' && <Market />}
             {route === 'battle' && <Battle />}
             {(route === 'profile' || route === 'showroom') && <Profile notifs={notifs} onRead={markRead} />}
+            {route === 'friends' && <Friends />}
+            {route === 'settings' && <Settings />}
           </main>
           <Dock />
           <AnimatePresence>{opening && <PackOpening key="opening" />}</AnimatePresence>

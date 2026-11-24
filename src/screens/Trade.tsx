@@ -41,8 +41,9 @@ export function Trade() {
   const toast = useGame((s) => s.toast);
   const refresh = useGame((s) => s.refresh);
   const [trades, setTrades] = useState<TradeOffer[]>([]);
-  const [open, setOpen] = useState(false);
-  const [target, setTarget] = useState('');
+  const param = useGame((s) => s.routeParam);
+  const [open, setOpen] = useState(!!param);
+  const [target, setTarget] = useState(param ?? '');
   const [theirs, setTheirs] = useState<PublicCard[] | null>(null);
   const [offer, setOffer] = useState<Set<string>>(new Set());
   const [request, setRequest] = useState<Set<string>>(new Set());

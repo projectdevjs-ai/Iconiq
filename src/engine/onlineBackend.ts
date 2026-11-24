@@ -1,6 +1,6 @@
 import { supabase } from '../lib/supabase';
 import type { RarityId } from '../config/game';
-import type { Backend, Currency, FeedItem, Invite, LeaderRow, Listing, OnlineFeatures, OwnedCard, PackResult, Profile, PublicProfile, Reward } from './types';
+import type { Backend, Currency, FeedItem, Friend, Invite, LeaderRow, Listing, OnlineFeatures, OwnedCard, PackResult, Profile, PublicProfile, Reward } from './types';
 
 type RawPack = { cards: (OwnedCard & { isNew: boolean })[]; profile: Profile };
 function norm(r: RawPack | null | undefined): PackResult | undefined {
@@ -38,6 +38,11 @@ export class OnlineBackend implements Backend, OnlineFeatures {
   createInvite(hours: number, note?: string) { return rpc<string>('create_invite', { p_hours: hours, p_note: note ?? null }); }
   listInvites() { return rpc<Invite[]>('list_invites'); }
   async revokeInvite(code: string) { await rpc('revoke_invite', { p_code: code }); }
+  friends() { return rpc<Friend[]>('list_friends'); }
+  addFriend(username: string) { return rpc<'sent' | 'accepted'>('send_friend_request', { p_username: username }); }
+  async respondFriend(id: string, accept: boolean) { await rpc('respond_friend', { p_id: id, p_accept: accept }); }
+  async removeFriend(id: string) { await rpc('remove_friend', { p_id: id }); }
+  async deleteAccount() { await rpc('delete_my_account', { p_confirm: 'SUPPRIMER' }); await supabase!.auth.signOut(); }
   recycleDuplicates(maxRarity: RarityId) { return rpc<{ gained: number; removed: string[]; profile: Profile }>('recycle_duplicates', { p_max_rarity: maxRarity }); }
   recycleCard(uid: string) { return rpc<{ gained: number; profile: Profile }>('recycle_card', { p_uid: uid }); }
   craft(variantId: string) { return rpc<{ card: OwnedCard; profile: Profile }>('craft_card', { p_variant: variantId }); }

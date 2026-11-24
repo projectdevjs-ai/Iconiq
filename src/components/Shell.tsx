@@ -1,4 +1,4 @@
-import { AnimatePresence, motion, LayoutGroup } from 'framer-motion';
+import { AnimatePresence, motion, LayoutGroup, useDragControls } from 'framer-motion';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import { sfx } from '../lib/fx';
@@ -104,6 +104,7 @@ export function Toasts() {
 }
 
 export function Sheet({ open, onClose, children }: { open: boolean; onClose(): void; children: ReactNode }) {
+  const drag = useDragControls();
   useEffect(() => {
     if (!open) return;
     const k = (e: KeyboardEvent) => e.key === 'Escape' && onClose();
@@ -119,11 +120,14 @@ export function Sheet({ open, onClose, children }: { open: boolean; onClose(): v
             className="sheet" role="dialog" aria-modal
             initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
             transition={{ type: 'spring', stiffness: 380, damping: 38 }}
-            drag="y" dragConstraints={{ top: 0, bottom: 0 }} dragElastic={{ top: 0, bottom: 0.6 }}
-            onDragEnd={(_, i) => { if (i.offset.y > 120 || i.velocity.y > 600) onClose(); }}
+            drag="y" dragListener={false} dragControls={drag} dragConstraints={{ top: 0, bottom: 0 }} dragElastic={{ top: 0, bottom: 0.6 }}
+            onDragEnd={(_, i) => { if (i.offset.y > 100 || i.velocity.y > 500) onClose(); }}
           >
-            <div className="sheet-handle" />
-            {children}
+            <div className="sheet-grab" onPointerDown={(e) => drag.start(e)}>
+              <div className="sheet-handle" />
+              <button className="sheet-close" onPointerDown={(e) => e.stopPropagation()} onClick={onClose} aria-label="Fermer">✕</button>
+            </div>
+            <div className="sheet-body">{children}</div>
           </motion.div>
         </>
       )}
