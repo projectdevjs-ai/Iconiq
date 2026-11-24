@@ -16,7 +16,7 @@ interface Save {
   serials: Record<string, number>;
 }
 
-const KEY = 'iconiq-local-save-v4'; // changer la version = repartir de zéro
+const KEY = 'iconiq-local-save-v5'; // changer la version = repartir de zéro
 
 function fresh(): Save {
   return {
