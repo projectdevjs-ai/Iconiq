@@ -211,7 +211,7 @@ img { -webkit-user-drag: none; user-select: none; }
 .tcg {
   --mx: 50%; --my: 50%; --rx: 0deg; --ry: 0deg; --hyp: 0; --s: 1;
   --rc: #9aa4b2; --rg: #c9d1dc;
-  position: relative; aspect-ratio: 2 / 3; width: 100%;
+  position: relative; aspect-ratio: var(--ar, 0.6667); width: 100%;
   border-radius: 4.5% / 3%;
   transform: perspective(900px) rotateX(var(--rx)) rotateY(var(--ry)) scale(var(--s));
   transform-style: preserve-3d;
@@ -409,7 +409,7 @@ img { -webkit-user-drag: none; user-select: none; }
 }
 .rays.on { opacity: 1; }
 @keyframes rays-spin { to { transform: translate(-50%, -50%) rotate(360deg); } }
-.stage { position: relative; width: min(66vw, 310px); aspect-ratio: 2 / 3; perspective: 1200px; }
+.stage { position: relative; width: min(66vw, 310px, calc(58vh * var(--ar, 0.6667))); aspect-ratio: var(--ar, 0.6667); perspective: 1200px; }
 .flipper { position: absolute; inset: 0; transform-style: preserve-3d; }
 .flipper > .face { position: absolute; inset: 0; backface-visibility: hidden; -webkit-backface-visibility: hidden; }
 .flipper > .face.front { transform: rotateY(180deg); }

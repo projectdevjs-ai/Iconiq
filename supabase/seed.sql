@@ -49,6 +49,17 @@ on conflict (id) do update set character_id = excluded.character_id, rarity = ex
 insert into characters values ('david-lopez', 'David Lopez', 'Gitan très très énervé. Constamment, tout le temps. Ne le cherchez jamais.') on conflict (id) do update set name = excluded.name, bio = excluded.bio;
 insert into card_variants values ('david-lopez-fureur', 'david-lopez', 'commune', 'Gitan très très énervé', true)
 on conflict (id) do update set character_id = excluded.character_id, rarity = excluded.rarity, title = excluded.title, active = true;
+insert into card_variants values ('david-bodybuilde', 'david-lopez', 'peu_commune', 'Gitan bodybuildé', true)
+on conflict (id) do update set character_id = excluded.character_id, rarity = excluded.rarity, title = excluded.title, active = true;
+insert into card_variants values ('david-repenti', 'david-lopez', 'rare', 'David Lopez repenti', true)
+on conflict (id) do update set character_id = excluded.character_id, rarity = excluded.rarity, title = excluded.title, active = true;
+insert into card_variants values ('david-repenti-gold', 'david-lopez', 'mythique', 'Repenti · Gold Edition', true)
+on conflict (id) do update set character_id = excluded.character_id, rarity = excluded.rarity, title = excluded.title, active = true;
+insert into characters values ('joe-lopez', 'Joe Lopez', 'Chef de clan. Il promet toujours de venir seul, mais toute la famille surgit des buissons.') on conflict (id) do update set name = excluded.name, bio = excluded.bio;
+insert into card_variants values ('joe-clan', 'joe-lopez', 'commune', 'Chef de clan', true)
+on conflict (id) do update set character_id = excluded.character_id, rarity = excluded.rarity, title = excluded.title, active = true;
+insert into card_variants values ('joe-repenti', 'joe-lopez', 'peu_commune', 'Joe Lopez repenti', true)
+on conflict (id) do update set character_id = excluded.character_id, rarity = excluded.rarity, title = excluded.title, active = true;
 insert into characters values ('patron', 'Le Patron', 'Tient le comptoir depuis toujours. Connaît tous les secrets du quartier.') on conflict (id) do update set name = excluded.name, bio = excluded.bio;
 insert into card_variants values ('patron-c', 'patron', 'commune', 'Derrière le comptoir', true)
 on conflict (id) do update set character_id = excluded.character_id, rarity = excluded.rarity, title = excluded.title, active = true;

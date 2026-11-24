@@ -1,6 +1,6 @@
 import { memo, useRef, type CSSProperties } from 'react';
 import { RARITY } from '../config/game';
-import { VARIANT_BY_ID } from '../data/catalog';
+import { VARIANT_BY_ID, cardRatio } from '../data/catalog';
 import { cardImage } from '../lib/art';
 import { useTilt } from '../lib/tilt';
 
@@ -28,7 +28,7 @@ export const Card = memo(function Card({ variantId, serial, interactive = true, 
       ref={ref}
       className={`tcg ${dim ? 'dim' : ''} ${className}`}
       data-rank={r.rank}
-      style={{ '--rc': r.color, '--rg': r.glow, ...style } as CSSProperties}
+      style={{ '--rc': r.color, '--rg': r.glow, '--ar': cardRatio(v), ...style } as CSSProperties}
       onClick={onClick}
       role={onClick ? 'button' : undefined}
       aria-label={`${v.characterName} — ${v.title} (${r.label})`}

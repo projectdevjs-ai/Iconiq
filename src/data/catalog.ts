@@ -16,6 +16,8 @@ export interface Variant {
   image?: string;
   /** l'image est déjà une carte complète (cadre + textes) : on n'ajoute pas notre cadre */
   fullCard?: boolean;
+  /** largeur/hauteur de l'image (2/3 par défaut, 3/4 pour les cartes 864×1152) */
+  ratio?: number;
   flavor?: string;
 }
 
@@ -54,6 +56,18 @@ export const CHARACTERS: Character[] = [
     bio: 'Gitan très très énervé. Constamment, tout le temps. Ne le cherchez jamais.',
     variants: [
       { id: 'david-lopez-fureur', rarity: 'commune', title: 'Gitan très très énervé', image: 'cards/david-lopez.webp', fullCard: true },
+      { id: 'david-bodybuilde', rarity: 'peu_commune', title: 'Gitan bodybuildé', image: 'cards/david-bodybuilde.webp', fullCard: true, ratio: 3 / 4 },
+      { id: 'david-repenti', rarity: 'rare', title: 'David Lopez repenti', image: 'cards/david-repenti.webp', fullCard: true, ratio: 3 / 4 },
+      { id: 'david-repenti-gold', rarity: 'mythique', title: 'Repenti · Gold Edition', image: 'cards/david-repenti-gold.webp', fullCard: true, ratio: 3 / 4 },
+    ],
+  },
+  {
+    id: 'joe-lopez',
+    name: 'Joe Lopez',
+    bio: 'Chef de clan. Il promet toujours de venir seul, mais toute la famille surgit des buissons.',
+    variants: [
+      { id: 'joe-clan', rarity: 'commune', title: 'Chef de clan', image: 'cards/joe-clan.webp', fullCard: true, ratio: 3 / 4 },
+      { id: 'joe-repenti', rarity: 'peu_commune', title: 'Joe Lopez repenti', image: 'cards/joe-repenti.webp', fullCard: true, ratio: 3 / 4 },
     ],
   },
   // ── Personnages d'exemple (à retirer quand il y aura assez de vrais) ──
@@ -201,3 +215,6 @@ export const VARIANTS: FlatVariant[] = CHARACTERS.flatMap((c) =>
 
 export const VARIANT_BY_ID: Record<string, FlatVariant> = Object.fromEntries(VARIANTS.map((v) => [v.id, v]));
 export const CHARACTER_BY_ID: Record<string, Character> = Object.fromEntries(CHARACTERS.map((c) => [c.id, c]));
+
+/** Proportions de la carte (largeur / hauteur). */
+export const cardRatio = (v: { ratio?: number }) => v.ratio ?? 2 / 3;

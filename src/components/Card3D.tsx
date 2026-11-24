@@ -3,10 +3,10 @@ import { Canvas, useFrame } from '@react-three/fiber';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { RARITY } from '../config/game';
-import { VARIANT_BY_ID } from '../data/catalog';
+import { VARIANT_BY_ID, cardRatio } from '../data/catalog';
 import { drawCard } from '../lib/cardCanvas';
 
-const W = 2.4, H = 3.6, D = 0.03;
+const D = 0.03;
 
 async function faceTexture(variantId: string, serial: number | null) {
   const t = new THREE.CanvasTexture(await drawCard(variantId, serial));
@@ -40,6 +40,7 @@ function CardMesh({ variantId, serial, spin }: { variantId: string; serial: numb
   const [face, setFace] = useState<THREE.Texture | null>(null);
   const back = useMemo(backTexture, []);
   const r = RARITY[VARIANT_BY_ID[variantId].rarity];
+  const H = 3.6, W = H * (VARIANT_BY_ID[variantId].fullCard ? cardRatio(VARIANT_BY_ID[variantId]) : 2 / 3);
   useEffect(() => {
     let t: THREE.Texture | null = null;
     faceTexture(variantId, serial).then((x) => { t = x; setFace(x); });

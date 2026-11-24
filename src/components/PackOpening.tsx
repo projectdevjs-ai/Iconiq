@@ -1,7 +1,7 @@
 import { AnimatePresence, motion, useAnimationControls } from 'framer-motion';
 import { useEffect, useRef, useState, type CSSProperties } from 'react';
 import { PACKS, RARITY } from '../config/game';
-import { VARIANT_BY_ID } from '../data/catalog';
+import { VARIANT_BY_ID, cardRatio } from '../data/catalog';
 import { sfx } from '../lib/fx';
 import { useGame } from '../store/game';
 import { BoosterPack } from './BoosterPack';
@@ -117,11 +117,11 @@ export function PackOpening() {
                 </motion.div>
               )}
             </AnimatePresence>
-            <div className="stage">
+            <div className="stage" style={{ '--ar': cardRatio(VARIANT_BY_ID[cur.variantId]) } as any}>
               {/* pile restante */}
               {cards.slice(idx + 1).map((_, i) => (
                 <div key={i} style={{ position: 'absolute', inset: 0, transform: `translate(${(i + 1) * 4}px, ${(i + 1) * 6}px) rotate(${(i + 1) * 1.5}deg)`, zIndex: -i - 1, opacity: 0.7 - i * 0.12 }}>
-                  <CardBack />
+                  <CardBack style={{ height: '100%', aspectRatio: 'auto' }} />
                 </div>
               ))}
               <motion.div
@@ -144,7 +144,7 @@ export function PackOpening() {
                     animate={{ rotateY: flipped ? 180 : 0, scale: flipped && rank >= 4 ? [1, 1.12, 1] : 1 }}
                     transition={{ rotateY: { duration: 0.55, ease: [0.3, 1.4, 0.5, 1] }, scale: { duration: 0.7 } }}
                   >
-                    <div className="face"><CardBack /></div>
+                    <div className="face"><CardBack style={{ height: '100%', aspectRatio: 'auto' }} /></div>
                     <div className="face front">
                       <Card variantId={cur.variantId} serial={cur.serial} isNew={flipped && isNew(cur.variantId)} interactive={flipped} strength={22} />
                     </div>

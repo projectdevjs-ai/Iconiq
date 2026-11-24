@@ -1,5 +1,5 @@
 import { RARITY } from '../config/game';
-import { VARIANT_BY_ID } from '../data/catalog';
+import { VARIANT_BY_ID, cardRatio } from '../data/catalog';
 import { cardImage } from './art';
 
 function loadImg(src: string) {
@@ -17,16 +17,16 @@ export async function drawCard(variantId: string, serial: number | null) {
   const v = VARIANT_BY_ID[variantId];
   const r = RARITY[v.rarity];
   const c = document.createElement('canvas');
-  c.width = 750; c.height = 1125;
+  c.width = 750; c.height = v.fullCard ? Math.round(750 / cardRatio(v)) : 1125;
   const g = c.getContext('2d')!;
   const img = await loadImg(cardImage(v));
-  const s = Math.max(750 / img.width, 1125 / img.height);
-  g.drawImage(img, (750 - img.width * s) / 2, (1125 - img.height * s) / 2, img.width * s, img.height * s);
+  const s = Math.max(750 / img.width, c.height / img.height);
+  g.drawImage(img, (750 - img.width * s) / 2, (c.height - img.height * s) / 2, img.width * s, img.height * s);
   if (v.fullCard) {
     if (serial != null) {
       g.font = '800 34px Unbounded, system-ui, sans-serif'; g.textAlign = 'center';
-      g.fillStyle = 'rgba(0,0,0,.7)'; g.fillRect(300, 1068, 150, 46);
-      g.fillStyle = r.glow; g.fillText(`#${serial}`, 375, 1104);
+      g.fillStyle = 'rgba(0,0,0,.7)'; g.fillRect(300, c.height - 57, 150, 46);
+      g.fillStyle = r.glow; g.fillText(`#${serial}`, 375, c.height - 21);
     }
     return c;
   }
