@@ -41,7 +41,8 @@ export function Welcome() {
       if (error) throw error;
       const { data } = await supabase.auth.getSession();
       if (signup) clearInvite();
-      if (!data.session) { toast('📧 Vérifie ta boîte mail pour confirmer ton compte, puis connecte-toi.', 'success'); setSignup(false); return; }
+      if (!data.session && signup) await supabase.auth.signInWithPassword({ email, password }); // compte déjà confirmé par l'invitation
+      if (!(await supabase.auth.getSession()).data.session) { toast('📧 Vérifie ta boîte mail pour confirmer ton compte, puis connecte-toi.', 'success'); setSignup(false); return; }
       await start('online');
     } catch (e) {
       sfx.error();

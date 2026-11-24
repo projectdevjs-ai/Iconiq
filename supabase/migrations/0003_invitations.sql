@@ -42,6 +42,11 @@ begin
       where invites.code = v_code and used_by is null and not revoked and expires_at > now();
     if not found then raise exception 'INVITATION_INVALIDE'; end if;
   end if;
+  -- l'invitation suffit comme preuve : pas besoin de confirmer l'e-mail
+  begin
+    update auth.users set email_confirmed_at = coalesce(email_confirmed_at, now()) where id = new.id;
+  exception when others then null;
+  end;
   return new;
 end $$;
 
@@ -111,3 +116,6 @@ $$;
 revoke execute on function check_invite(text), create_invite(int, text), revoke_invite(text), list_invites(), _admin() from public, anon, authenticated;
 grant execute on function check_invite(text) to anon, authenticated;
 grant execute on function create_invite(int, text), revoke_invite(text), list_invites() to authenticated;
+
+-- recharge l'API pour que les nouvelles fonctions soient visibles tout de suite
+notify pgrst, 'reload schema';
