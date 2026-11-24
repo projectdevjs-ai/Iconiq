@@ -49,3 +49,11 @@ on conflict (id) do update set character_id = excluded.character_id, rarity = ex
 lines.push('commit;');
 writeFileSync(new URL('../supabase/seed.sql', import.meta.url), lines.join('\n') + '\n');
 console.log(`seed.sql généré : ${CHARACTERS.length} personnages, ${CHARACTERS.reduce((n, c) => n + c.variants.length, 0)} cartes.`);
+
+// Fichier unique à coller dans Supabase (SQL Editor) : schéma + mises à jour + données
+import { readFileSync, readdirSync } from 'node:fs';
+const dir = new URL('../supabase/migrations/', import.meta.url);
+const parts = readdirSync(dir).filter((f) => f.endsWith('.sql')).sort().map((f) => `-- ═══ ${f} ═══\n` + readFileSync(new URL(f, dir), 'utf8'));
+parts.push('-- ═══ seed.sql ═══\n' + readFileSync(new URL('../supabase/seed.sql', import.meta.url), 'utf8'));
+writeFileSync(new URL('../supabase/setup.sql', import.meta.url), '-- ICONIQ : copie TOUT ce fichier dans Supabase > SQL Editor, puis « Run ».\n\n' + parts.join('\n\n'));
+console.log('setup.sql généré (à coller dans Supabase).');

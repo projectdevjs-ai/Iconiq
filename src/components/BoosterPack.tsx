@@ -48,7 +48,7 @@ export function BoosterPack({ name, accent, glow, characters, particles, onTorn 
   const tearing = useRef<{ startX: number; lastTick: number; lastX: number; lastT: number; started: boolean } | null>(null);
   const pts = useRef<Map<number, number>>(new Map());
   const shake = useAnimationControls();
-  useTilt(tiltRef, !torn && !grip, 10);
+  useTilt(tiltRef, !torn && !grip && cut.length === 0, 10);
 
   const progress = () => pts.current.size / (STEPS + 1);
   const p = cut.length ? progress() : 0;
@@ -71,7 +71,8 @@ export function BoosterPack({ name, accent, glow, characters, particles, onTorn 
     for (let k = from; k <= to; k++) {
       if (pts.current.has(k)) continue;
       // bord déchiqueté : dents irrégulières
-      const tooth = (k % 2 ? 1 : -1) * (0.002 + Math.random() * 0.005);
+      // bord net : légère ondulation naturelle, pas de dents de scie
+      const tooth = Math.sin(k * 0.35) * 0.0012 + (Math.random() - 0.5) * 0.0006;
       pts.current.set(k, y0 + ((yy - y0) * (k - from)) / Math.max(1, to - from) + tooth);
       added++;
     }
@@ -90,6 +91,9 @@ export function BoosterPack({ name, accent, glow, characters, particles, onTorn 
     (e.target as Element).setPointerCapture?.(e.pointerId);
     tearing.current = { startX: x, lastTick: progress(), lastX: x, lastT: performance.now(), started: false };
     setGrip({ x, y: LINE_Y });
+    // fige le sachet bien à plat pour que la ligne reste sous le doigt
+    const el = tiltRef.current;
+    if (el) { el.classList.remove('active'); ['--rx', '--ry'].forEach((k) => el.style.setProperty(k, '0deg')); }
     if (!pts.current.size) sfx.tearStart();
   };
 
@@ -119,7 +123,7 @@ export function BoosterPack({ name, accent, glow, characters, particles, onTorn 
   const finish = (dd: number) => {
     const ks = [...pts.current.keys()];
     const last = pts.current.get(dd > 0 ? Math.max(...ks) : Math.min(...ks)) ?? LINE_Y;
-    for (let k = 0; k <= STEPS; k++) if (!pts.current.has(k)) pts.current.set(k, last + (k % 2 ? 0.004 : -0.004));
+    for (let k = 0; k <= STEPS; k++) if (!pts.current.has(k)) pts.current.set(k, last + Math.sin(k * 0.35) * 0.0012);
     publish();
     tearing.current = null;
     setGrip(null);
@@ -159,7 +163,7 @@ export function BoosterPack({ name, accent, glow, characters, particles, onTorn 
           {/* lumière du contenu, visible à travers la fente */}
           <div className="pack-leak" style={{ top: `${LINE_Y * 100}%`, opacity: torn ? 1 : Math.min(1, p * 1.6) }} />
 
-          {cut.length < 2 ? (
+          {!torn || cut.length < 2 ? (
             <div className="pack-piece">{art}</div>
           ) : (
             <>
