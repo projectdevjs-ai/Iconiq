@@ -60,110 +60,92 @@ insert into card_variants values ('joe-clan', 'joe-lopez', 'commune', 'Chef de c
 on conflict (id) do update set character_id = excluded.character_id, rarity = excluded.rarity, title = excluded.title, active = true;
 insert into card_variants values ('joe-repenti', 'joe-lopez', 'peu_commune', 'Joe Lopez repenti', true)
 on conflict (id) do update set character_id = excluded.character_id, rarity = excluded.rarity, title = excluded.title, active = true;
-insert into characters values ('patron', 'Le Patron', 'Tient le comptoir depuis toujours. Connaît tous les secrets du quartier.') on conflict (id) do update set name = excluded.name, bio = excluded.bio;
-insert into card_variants values ('patron-c', 'patron', 'commune', 'Derrière le comptoir', true)
+insert into card_variants values ('joe-repenti-gold', 'joe-lopez', 'mythique', 'Repenti · Gold Edition', true)
 on conflict (id) do update set character_id = excluded.character_id, rarity = excluded.rarity, title = excluded.title, active = true;
-insert into card_variants values ('patron-r', 'patron', 'rare', 'Tournée générale', true)
+insert into card_variants values ('joe-cascade', 'joe-lopez', 'secrete', 'L’Élu de la Cascade', true)
 on conflict (id) do update set character_id = excluded.character_id, rarity = excluded.rarity, title = excluded.title, active = true;
-insert into card_variants values ('patron-l', 'patron', 'legendaire', 'Fermeture à 6h', true)
+insert into characters values ('kendji', 'Kendji Girac', 'Du campement aux Zéniths, puis les gros titres. La guitare reste accrochée.') on conflict (id) do update set name = excluded.name, bio = excluded.bio;
+insert into card_variants values ('kendji-depression', 'kendji', 'commune', 'Mode Dépression', true)
 on conflict (id) do update set character_id = excluded.character_id, rarity = excluded.rarity, title = excluded.title, active = true;
-insert into card_variants values ('patron-s', 'patron', 'secrete', 'Le Patron Éternel', true)
+insert into card_variants values ('kendji-mure', 'kendji', 'commune', 'Époque Mûre', true)
 on conflict (id) do update set character_id = excluded.character_id, rarity = excluded.rarity, title = excluded.title, active = true;
-insert into characters values ('reine', 'La Reine du Marché', 'Ses prix sont imbattables, sa voix porte jusqu’à la mairie.') on conflict (id) do update set name = excluded.name, bio = excluded.bio;
-insert into card_variants values ('reine-c', 'reine', 'commune', 'Étal du samedi', true)
+insert into card_variants values ('kendji-or', 'kendji', 'peu_commune', 'L’Âge d’Or', true)
 on conflict (id) do update set character_id = excluded.character_id, rarity = excluded.rarity, title = excluded.title, active = true;
-insert into card_variants values ('reine-pc', 'reine', 'peu_commune', 'Prix cassés', true)
+insert into card_variants values ('kendji-gold', 'kendji', 'legendaire', 'Gold Edition', true)
 on conflict (id) do update set character_id = excluded.character_id, rarity = excluded.rarity, title = excluded.title, active = true;
-insert into card_variants values ('reine-e', 'reine', 'epique', 'Criée royale', true)
+insert into characters values ('henoc', 'Hénoc Cortez', 'Toujours prêt à prendre le micro, surtout si la famille Lopez regarde.') on conflict (id) do update set name = excluded.name, bio = excluded.bio;
+insert into card_variants values ('henoc-tele', 'henoc', 'commune', 'Plateau Télé', true)
 on conflict (id) do update set character_id = excluded.character_id, rarity = excluded.rarity, title = excluded.title, active = true;
-insert into card_variants values ('reine-m', 'reine', 'mythique', 'Impératrice des Halles', true)
+insert into card_variants values ('henoc-coudz', 'henoc', 'peu_commune', 'Hénoc Cortez et son Coudz', true)
 on conflict (id) do update set character_id = excluded.character_id, rarity = excluded.rarity, title = excluded.title, active = true;
-insert into characters values ('coach', 'Le Coach', 'Entraîne l’équipe locale. N’a jamais perdu un débat.') on conflict (id) do update set name = excluded.name, bio = excluded.bio;
-insert into card_variants values ('coach-c', 'coach', 'commune', 'Sifflet au cou', true)
+insert into card_variants values ('henoc-or', 'henoc', 'legendaire', 'Plaqué Or · Golden Edition', true)
 on conflict (id) do update set character_id = excluded.character_id, rarity = excluded.rarity, title = excluded.title, active = true;
-insert into card_variants values ('coach-pc', 'coach', 'peu_commune', 'Causerie d’avant-match', true)
+insert into card_variants values ('henoc-or-fullart', 'henoc', 'mythique', 'Plaqué Or · Golden Full Art', true)
 on conflict (id) do update set character_id = excluded.character_id, rarity = excluded.rarity, title = excluded.title, active = true;
-insert into card_variants values ('coach-r', 'coach', 'rare', 'Tactique secrète', true)
+insert into characters values ('sandy', 'Sandy Family', 'Chaque semaine son scandale, chaque soir sa boconaise.') on conflict (id) do update set name = excluded.name, bio = excluded.bio;
+insert into card_variants values ('sandy-courses', 'sandy', 'commune', 'Courses & Repentir', true)
 on conflict (id) do update set character_id = excluded.character_id, rarity = excluded.rarity, title = excluded.title, active = true;
-insert into card_variants values ('coach-l', 'coach', 'legendaire', 'Remontada', true)
+insert into card_variants values ('sandy-retour', 'sandy', 'commune', 'Le Retour en Force', true)
 on conflict (id) do update set character_id = excluded.character_id, rarity = excluded.rarity, title = excluded.title, active = true;
-insert into characters values ('dj', 'DJ Minuit', 'Toutes les fêtes passent par ses platines.') on conflict (id) do update set name = excluded.name, bio = excluded.bio;
-insert into card_variants values ('dj-c', 'dj', 'commune', 'Balance son', true)
+insert into card_variants values ('sandy-discours', 'sandy', 'peu_commune', 'Discours Solennel', true)
 on conflict (id) do update set character_id = excluded.character_id, rarity = excluded.rarity, title = excluded.title, active = true;
-insert into card_variants values ('dj-r', 'dj', 'rare', 'Drop de 2h', true)
+insert into card_variants values ('sandy-gold', 'sandy', 'legendaire', 'Gold Edition', true)
 on conflict (id) do update set character_id = excluded.character_id, rarity = excluded.rarity, title = excluded.title, active = true;
-insert into card_variants values ('dj-e', 'dj', 'epique', 'Main Stage', true)
+insert into characters values ('sandra', 'Sandra Baratier', 'Ring light, churros et lives jusqu’à 2h du matin.') on conflict (id) do update set name = excluded.name, bio = excluded.bio;
+insert into card_variants values ('sandra-churros', 'sandra', 'commune', 'Churros', true)
 on conflict (id) do update set character_id = excluded.character_id, rarity = excluded.rarity, title = excluded.title, active = true;
-insert into card_variants values ('dj-m', 'dj', 'mythique', 'Le Son Interdit', true)
+insert into card_variants values ('sandra-haul', 'sandra', 'commune', 'Haul', true)
 on conflict (id) do update set character_id = excluded.character_id, rarity = excluded.rarity, title = excluded.title, active = true;
-insert into characters values ('mamie', 'Mamie Turbo', 'Plus rapide en scooter que n’importe qui. Gâteaux légendaires.') on conflict (id) do update set name = excluded.name, bio = excluded.bio;
-insert into card_variants values ('mamie-c', 'mamie', 'commune', 'Tricot du dimanche', true)
+insert into card_variants values ('sandra-live', 'sandra', 'rare', 'Live', true)
 on conflict (id) do update set character_id = excluded.character_id, rarity = excluded.rarity, title = excluded.title, active = true;
-insert into card_variants values ('mamie-pc', 'mamie', 'peu_commune', 'Tarte aux pommes', true)
+insert into card_variants values ('sandra-max', 'sandra', 'secrete', 'Ultra Rare Légendaire Maximum ++', true)
 on conflict (id) do update set character_id = excluded.character_id, rarity = excluded.rarity, title = excluded.title, active = true;
-insert into card_variants values ('mamie-e', 'mamie', 'epique', 'Scooter turbo', true)
+insert into characters values ('aonji', 'Aonji', 'Homme ou femme ? Personne ne sait. Le sourire, lui, est garanti.') on conflict (id) do update set name = excluded.name, bio = excluded.bio;
+insert into card_variants values ('aonji-caravane', 'aonji', 'commune', 'Mystère de la Caravane', true)
 on conflict (id) do update set character_id = excluded.character_id, rarity = excluded.rarity, title = excluded.title, active = true;
-insert into card_variants values ('mamie-l', 'mamie', 'legendaire', 'La Doyenne', true)
+insert into card_variants values ('aonji-chic', 'aonji', 'peu_commune', 'Chic & Mystère', true)
 on conflict (id) do update set character_id = excluded.character_id, rarity = excluded.rarity, title = excluded.title, active = true;
-insert into characters values ('influ', 'L’Influenceur', '12 000 abonnés, et il vous le rappellera.') on conflict (id) do update set name = excluded.name, bio = excluded.bio;
-insert into card_variants values ('influ-c', 'influ', 'commune', 'Story du matin', true)
+insert into card_variants values ('aonji-vapeur', 'aonji', 'rare', 'Édition Vapeur', true)
 on conflict (id) do update set character_id = excluded.character_id, rarity = excluded.rarity, title = excluded.title, active = true;
-insert into card_variants values ('influ-pc', 'influ', 'peu_commune', 'Placement de produit', true)
+insert into card_variants values ('aonji-gold', 'aonji', 'legendaire', 'Gold Edition', true)
 on conflict (id) do update set character_id = excluded.character_id, rarity = excluded.rarity, title = excluded.title, active = true;
-insert into card_variants values ('influ-r', 'influ', 'rare', 'Live à 3h', true)
+insert into characters values ('tiou', 'Tiou Duvil', 'Reine du live. Plus ça choque, plus les vues grimpent.') on conflict (id) do update set name = excluded.name, bio = excluded.bio;
+insert into card_variants values ('tiou-live', 'tiou', 'commune', 'Reine du Live', true)
 on conflict (id) do update set character_id = excluded.character_id, rarity = excluded.rarity, title = excluded.title, active = true;
-insert into card_variants values ('influ-e', 'influ', 'epique', 'Vu partout', true)
+insert into card_variants values ('tiou-ultra', 'tiou', 'mythique', 'Ultra Rare · Limited Edition', true)
 on conflict (id) do update set character_id = excluded.character_id, rarity = excluded.rarity, title = excluded.title, active = true;
-insert into characters values ('meca', 'Le Mécano', 'Répare tout avec un tournevis et un regard.') on conflict (id) do update set name = excluded.name, bio = excluded.bio;
-insert into card_variants values ('meca-c', 'meca', 'commune', 'Mains dans le cambouis', true)
+insert into characters values ('lolita', 'Lolita Duvil', 'Mariages, niversaires, tout. Son palmier gonflable est légendaire.') on conflict (id) do update set name = excluded.name, bio = excluded.bio;
+insert into card_variants values ('lolita', 'lolita', 'secrete', 'Édition Spéciale · Unique', true)
 on conflict (id) do update set character_id = excluded.character_id, rarity = excluded.rarity, title = excluded.title, active = true;
-insert into card_variants values ('meca-pc', 'meca', 'peu_commune', 'Diagnostic express', true)
+insert into characters values ('louis', 'Louis Gouyon de Matignon', 'Parle mieux voyageur que les voyageurs eux-mêmes.') on conflict (id) do update set name = excluded.name, bio = excluded.bio;
+insert into card_variants values ('louis-voyageur', 'louis', 'legendaire', 'Parle Mieux Voyageur', true)
 on conflict (id) do update set character_id = excluded.character_id, rarity = excluded.rarity, title = excluded.title, active = true;
-insert into card_variants values ('meca-r', 'meca', 'rare', 'Moteur V8', true)
+insert into card_variants values ('louis-chapiteau', 'louis', 'legendaire', 'Bénédiction du Chapiteau', true)
 on conflict (id) do update set character_id = excluded.character_id, rarity = excluded.rarity, title = excluded.title, active = true;
-insert into card_variants values ('meca-m', 'meca', 'mythique', 'Le Garage Fantôme', true)
+insert into card_variants values ('louis-familles', 'louis', 'mythique', 'Dédicace aux Familles', true)
 on conflict (id) do update set character_id = excluded.character_id, rarity = excluded.rarity, title = excluded.title, active = true;
-insert into characters values ('maire', 'Monsieur le Maire', 'Inaugure tout ce qui peut l’être. Même les ronds-points.') on conflict (id) do update set name = excluded.name, bio = excluded.bio;
-insert into card_variants values ('maire-c', 'maire', 'commune', 'Ruban rouge', true)
+insert into characters values ('homme-place', 'Homme de la Place', 'Quand il s’approche de la caméra, il est déjà trop tard.') on conflict (id) do update set name = excluded.name, bio = excluded.bio;
+insert into card_variants values ('place-barbu', 'homme-place', 'epique', 'Tu vas repartir mal mon copain', true)
 on conflict (id) do update set character_id = excluded.character_id, rarity = excluded.rarity, title = excluded.title, active = true;
-insert into card_variants values ('maire-pc', 'maire', 'peu_commune', 'Discours fleuve', true)
+insert into card_variants values ('place-stand', 'homme-place', 'epique', 'Peinture, pinceau et euh… pinceau', true)
 on conflict (id) do update set character_id = excluded.character_id, rarity = excluded.rarity, title = excluded.title, active = true;
-insert into card_variants values ('maire-e', 'maire', 'epique', 'Campagne éclair', true)
+insert into card_variants values ('place-moonwalk', 'homme-place', 'secrete', 'Moonwalk sur le Terrain', true)
 on conflict (id) do update set character_id = excluded.character_id, rarity = excluded.rarity, title = excluded.title, active = true;
-insert into card_variants values ('maire-l', 'maire', 'legendaire', 'Mandat éternel', true)
+insert into characters values ('homme-terrain', 'Homme du Terrain', 'Quand il annonce la couleur, tout le terrain recule.') on conflict (id) do update set name = excluded.name, bio = excluded.bio;
+insert into card_variants values ('terrain', 'homme-terrain', 'epique', 'J’annonce : faut que ça tombe', true)
 on conflict (id) do update set character_id = excluded.character_id, rarity = excluded.rarity, title = excluded.title, active = true;
-insert into characters values ('facteur', 'Le Facteur', 'Sait qui reçoit quoi. Ne dit rien. Enfin, presque.') on conflict (id) do update set name = excluded.name, bio = excluded.bio;
-insert into card_variants values ('facteur-c', 'facteur', 'commune', 'Tournée matinale', true)
+insert into characters values ('mayer', '100% Mayer', 'Short à palmiers, salon cuir beige : 100% authentique.') on conflict (id) do update set name = excluded.name, bio = excluded.bio;
+insert into card_variants values ('mayer', 'mayer', 'secrete', 'Édition Spéciale · Unique', true)
 on conflict (id) do update set character_id = excluded.character_id, rarity = excluded.rarity, title = excluded.title, active = true;
-insert into card_variants values ('facteur-pc', 'facteur', 'peu_commune', 'Colis suspect', true)
+insert into characters values ('cherklo', 'Cherklo', 'Petit jeune au calme légendaire. Mythe d’Internet.') on conflict (id) do update set name = excluded.name, bio = excluded.bio;
+insert into card_variants values ('cherklo', 'cherklo', 'secrete', 'Édition Spéciale · Unique', true)
 on conflict (id) do update set character_id = excluded.character_id, rarity = excluded.rarity, title = excluded.title, active = true;
-insert into card_variants values ('facteur-r', 'facteur', 'rare', 'Recommandé', true)
+insert into characters values ('comi', 'Les Comis', 'Tirés dans tous les boosters, jamais mis dans un deck.') on conflict (id) do update set name = excluded.name, bio = excluded.bio;
+insert into card_variants values ('comi-park', 'comi', 'commune', 'Comi du Park · Ultra Commune', true)
 on conflict (id) do update set character_id = excluded.character_id, rarity = excluded.rarity, title = excluded.title, active = true;
-insert into characters values ('boulangere', 'La Boulangère', 'Debout à 4h, sourire à 7h, rupture de stock à 8h.') on conflict (id) do update set name = excluded.name, bio = excluded.bio;
-insert into card_variants values ('boul-c', 'boulangere', 'commune', 'Fournée de 4h', true)
+insert into card_variants values ('comi-village', 'comi', 'rare', 'Comi du Village · Jigoubougoula', true)
 on conflict (id) do update set character_id = excluded.character_id, rarity = excluded.rarity, title = excluded.title, active = true;
-insert into card_variants values ('boul-pc', 'boulangere', 'peu_commune', 'Dernière baguette', true)
-on conflict (id) do update set character_id = excluded.character_id, rarity = excluded.rarity, title = excluded.title, active = true;
-insert into card_variants values ('boul-r', 'boulangere', 'rare', 'Croissant d’or', true)
-on conflict (id) do update set character_id = excluded.character_id, rarity = excluded.rarity, title = excluded.title, active = true;
-insert into card_variants values ('boul-e', 'boulangere', 'epique', 'Galette des Rois', true)
-on conflict (id) do update set character_id = excluded.character_id, rarity = excluded.rarity, title = excluded.title, active = true;
-insert into characters values ('gamer', 'Le Gamer', 'N’a pas vu le soleil depuis 2019. Champion régional.') on conflict (id) do update set name = excluded.name, bio = excluded.bio;
-insert into card_variants values ('gamer-c', 'gamer', 'commune', 'Encore une partie', true)
-on conflict (id) do update set character_id = excluded.character_id, rarity = excluded.rarity, title = excluded.title, active = true;
-insert into card_variants values ('gamer-pc', 'gamer', 'peu_commune', 'Rage quit', true)
-on conflict (id) do update set character_id = excluded.character_id, rarity = excluded.rarity, title = excluded.title, active = true;
-insert into card_variants values ('gamer-r', 'gamer', 'rare', 'Clutch 1v5', true)
-on conflict (id) do update set character_id = excluded.character_id, rarity = excluded.rarity, title = excluded.title, active = true;
-insert into card_variants values ('gamer-l', 'gamer', 'legendaire', 'Speedrun mondial', true)
-on conflict (id) do update set character_id = excluded.character_id, rarity = excluded.rarity, title = excluded.title, active = true;
-insert into characters values ('voisine', 'La Voisine', 'Derrière le rideau, rien ne lui échappe.') on conflict (id) do update set name = excluded.name, bio = excluded.bio;
-insert into card_variants values ('voisine-c', 'voisine', 'commune', 'Rideau entrouvert', true)
-on conflict (id) do update set character_id = excluded.character_id, rarity = excluded.rarity, title = excluded.title, active = true;
-insert into card_variants values ('voisine-pc', 'voisine', 'peu_commune', 'Rumeur du jour', true)
-on conflict (id) do update set character_id = excluded.character_id, rarity = excluded.rarity, title = excluded.title, active = true;
-insert into card_variants values ('voisine-r', 'voisine', 'rare', 'Jumelles', true)
-on conflict (id) do update set character_id = excluded.character_id, rarity = excluded.rarity, title = excluded.title, active = true;
-insert into card_variants values ('voisine-s', 'voisine', 'secrete', 'Elle Sait Tout', true)
+insert into characters values ('mouchoir', 'Le Mouchoir', 'Carte Objet · Tradition. Impossible de tricher avec la tradition.') on conflict (id) do update set name = excluded.name, bio = excluded.bio;
+insert into card_variants values ('mouchoir', 'mouchoir', 'epique', 'Carte Objet · Tradition', true)
 on conflict (id) do update set character_id = excluded.character_id, rarity = excluded.rarity, title = excluded.title, active = true;
 commit;

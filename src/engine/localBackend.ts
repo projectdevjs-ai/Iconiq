@@ -1,6 +1,6 @@
 import { get, set } from 'idb-keyval';
 import { GAME, PACKS, RARITY, type RarityId } from '../config/game';
-import { VARIANTS, VARIANT_BY_ID } from '../data/catalog';
+import { VARIANT_BY_ID } from '../data/catalog';
 import { dailyCredits, dailyStatus, drawPack, streakAfterClaim } from './rules';
 import type { Backend, Currency, OwnedCard, Profile } from './types';
 
@@ -15,7 +15,7 @@ interface Save {
   serials: Record<string, number>;
 }
 
-const KEY = 'iconiq-local-save-v3'; // changer la version = repartir de zéro
+const KEY = 'iconiq-local-save-v4'; // changer la version = repartir de zéro
 
 function fresh(): Save {
   return {
@@ -74,15 +74,7 @@ export class LocalBackend implements Backend {
       p.credits -= pack.costCredits;
     }
     const owned = new Set(this.save.cards.map((c) => c.variantId));
-    let { variants, state } = drawPack(currency === 'daily' ? 'standard' : packId, p);
-    // Démo : le tout premier booster ne contient que les vraies cartes (dont la Gold Mythique)
-    if (import.meta.env.VITE_EMBED && p.packsOpened === 0) {
-      const real = VARIANTS.filter((v) => v.fullCard);
-      const gold = real.filter((v) => v.rarity === 'mythique');
-      const rest = real.filter((v) => v.rarity !== 'mythique').sort(() => Math.random() - 0.5);
-      variants = [...gold, ...rest].slice(0, 5).sort((a, b) => RARITY[a.rarity].rank - RARITY[b.rarity].rank);
-      state = { pityEpic: 0, pityLegend: 0 };
-    }
+    const { variants, state } = drawPack(currency === 'daily' ? 'standard' : packId, p);
     p.pityEpic = state.pityEpic;
     p.pityLegend = state.pityLegend;
     p.packsOpened++;
