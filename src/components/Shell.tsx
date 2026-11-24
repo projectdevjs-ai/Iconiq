@@ -30,7 +30,7 @@ function Currency({ icon, value, color, title }: { icon: string; value: number; 
   return (
     <motion.span className="pill num" title={title} key={value > 0 ? undefined : 0} style={{ color }}>
       <span className="ico">{icon}</span>
-      <span style={{ color: '#fff' }}>{v.toLocaleString('fr-FR')}</span>
+      <span style={{ color: '#fff' }}>{v >= 100000 ? Math.floor(v / 1000) + 'k' : v >= 10000 ? (v / 1000).toFixed(1).replace('.', ',') + 'k' : v.toLocaleString('fr-FR')}</span>
     </motion.span>
   );
 }
@@ -48,12 +48,6 @@ export function TopBar({ unread, onLogoTap }: { unread: number; onLogoTap(): voi
       <Currency icon="🪙" value={profile.credits} color="var(--gold)" title="Crédits" />
       <Currency icon="✦" value={profile.shards} color="var(--accent-2)" title="Éclats" />
       {backend?.mode === 'online' && <Currency icon="💎" value={profile.gems} color="#ff6bd6" title="Gemmes" />}
-      {!!((document.documentElement as any).requestFullscreen || (document.documentElement as any).webkitRequestFullscreen) && <button className="icon-btn" aria-label="Plein écran" onClick={async () => {
-        sfx.tap();
-        if (!(await toggleFullscreen())) useGame.getState().toast(/iPhone|iPad/.test(navigator.userAgent)
-          ? 'Sur iPhone, le plein écran s’obtient en installant l’app (Partager → Sur l’écran d’accueil) sur la version en ligne.'
-          : 'Plein écran bloqué ici. Ouvre la page dans ton navigateur (Chrome) pour l’activer.');
-      }}>⛶</button>}
       <button className="icon-btn" onClick={() => { sfx.tap(); go('profile'); }} aria-label="Profil">
         👤{unread > 0 && <span className="badge-dot">{unread}</span>}
       </button>

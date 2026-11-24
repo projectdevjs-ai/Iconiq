@@ -6,6 +6,7 @@ import { musicWanted, setMusic } from '../lib/music';
 import { enablePush, isStandalone } from '../lib/push';
 import { supabase } from '../lib/supabase';
 import { enableGyro } from '../lib/tilt';
+import { toggleFullscreen } from '../lib/fullscreen';
 import { useGame } from '../store/game';
 
 function Toggle({ label, desc, on, onChange }: { label: string; desc?: string; on: boolean; onChange(v: boolean): void }) {
@@ -90,6 +91,7 @@ export function Settings() {
       <div className="glass settings-group">
         <Toggle label="Réduire les animations" desc="Moins d’effets, plus économe en batterie" on={reduce} onChange={(v) => { setPref('iconiq-reduce', v); setReduce(v); applyReduceMotion(); }} />
         <button className="setting" onClick={async () => toast((await enableGyro()) ? '📱 Bouge ton téléphone : les cartes brillent !' : 'Gyroscope indisponible')}><b style={{ flex: 1, textAlign: 'left' }}>Effet holo au gyroscope</b><span className="sub">Activer ›</span></button>
+        <button className="setting" onClick={async () => { if (!(await toggleFullscreen())) toast(/iPhone|iPad/.test(navigator.userAgent) ? 'Sur iPhone : Partager → « Sur l’écran d’accueil », puis ouvre ICONIQ depuis l’icône : il sera en plein écran.' : 'Plein écran indisponible ici.'); }}><b style={{ flex: 1, textAlign: 'left' }}>Plein écran</b><span className="sub">›</span></button>
         <button className="setting" onClick={() => { try { localStorage.removeItem('iconiq-intro'); } catch { /* */ } location.reload(); }}><b style={{ flex: 1, textAlign: 'left' }}>Revoir l’introduction</b><span className="sub">›</span></button>
       </div>
 
