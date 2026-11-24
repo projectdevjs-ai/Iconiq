@@ -1,6 +1,6 @@
 import { supabase } from '../lib/supabase';
 import type { RarityId } from '../config/game';
-import type { Backend, Currency, FeedItem, LeaderRow, Listing, OnlineFeatures, OwnedCard, PackResult, Profile, PublicProfile, Reward } from './types';
+import type { Backend, Currency, FeedItem, Invite, LeaderRow, Listing, OnlineFeatures, OwnedCard, PackResult, Profile, PublicProfile, Reward } from './types';
 
 type RawPack = { cards: (OwnedCard & { isNew: boolean })[]; profile: Profile };
 function norm(r: RawPack | null | undefined): PackResult | undefined {
@@ -35,6 +35,9 @@ export class OnlineBackend implements Backend, OnlineFeatures {
   feed() { return rpc<FeedItem[]>('list_feed'); }
   publicProfile(username: string) { return rpc<PublicProfile | null>('public_profile', { p_username: username }); }
   weeklyLeaderboard() { return rpc<LeaderRow[]>('leaderboard_week'); }
+  createInvite(hours: number, note?: string) { return rpc<string>('create_invite', { p_hours: hours, p_note: note ?? null }); }
+  listInvites() { return rpc<Invite[]>('list_invites'); }
+  async revokeInvite(code: string) { await rpc('revoke_invite', { p_code: code }); }
   recycleDuplicates(maxRarity: RarityId) { return rpc<{ gained: number; removed: string[]; profile: Profile }>('recycle_duplicates', { p_max_rarity: maxRarity }); }
   recycleCard(uid: string) { return rpc<{ gained: number; profile: Profile }>('recycle_card', { p_uid: uid }); }
   craft(variantId: string) { return rpc<{ card: OwnedCard; profile: Profile }>('craft_card', { p_variant: variantId }); }

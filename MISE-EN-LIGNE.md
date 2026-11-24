@@ -47,3 +47,13 @@ Le bouton « Jouer en ligne » est maintenant actif. Pour ne pas avoir à confir
 ## Étape 3, plus tard : notifications push et paiements (Stripe)
 
 On s'en occupera quand l'app sera finie, comme convenu.
+
+---
+
+## Jeu sur invitation
+
+- La version publiée est **sur invitation uniquement**, sans mode local.
+- **Le tout premier compte créé devient administrateur** : crée le tien en premier, tout de suite après avoir installé la base.
+- Pour inviter quelqu'un : **Profil → 🎟️ Inviter des joueurs**. Choisis une durée (24 h, 3 jours, 7 jours), puis partage le lien.
+- Chaque lien ne sert **qu'une fois**. La personne crée son compte avec, et le lien devient inutilisable pour tout le monde. Elle continue ensuite à jouer en se connectant avec son e-mail et son mot de passe.
+- Tu peux annuler un lien pas encore utilisé et voir qui a utilisé chaque lien.

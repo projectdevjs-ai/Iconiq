@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { ACHIEVEMENTS, rewardState, rewardText } from '../engine/rewards';
 import { Card } from '../components/Card';
 import { Sheet } from '../components/Shell';
+import { Invites } from '../components/Invites';
 import { musicWanted, setMusic } from '../lib/music';
 import type { PublicProfile } from '../engine/types';
 import { RARITY } from '../config/game';
@@ -94,6 +95,13 @@ export function Profile({ notifs, onRead }: { notifs: AppNotification[]; onRead(
           <span key={r.id} className="pill" style={{ height: 28, fontSize: 12, color: r.color }}>● <span style={{ color: '#fff' }}>{stats.byR.get(r.id) ?? 0}</span></span>
         ))}
       </div>
+
+      {api && profile.isAdmin && (
+        <>
+          <h2 className="h2">🎟️ Inviter des joueurs</h2>
+          <Invites />
+        </>
+      )}
 
       <h2 className="h2">✨ Ma vitrine</h2>
       <div className="showcase">

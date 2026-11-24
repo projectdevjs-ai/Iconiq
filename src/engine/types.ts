@@ -23,6 +23,7 @@ export interface Profile {
   pityLegend: number;
   packsOpened: number;
   progress: Progress;
+  isAdmin?: boolean;
 }
 
 import type { Progress, Reward } from './rewards';
@@ -116,7 +117,11 @@ export interface OnlineFeatures {
   feed(): Promise<FeedItem[]>;
   publicProfile(username: string): Promise<PublicProfile | null>;
   weeklyLeaderboard(): Promise<LeaderRow[]>;
+  createInvite(hours: number, note?: string): Promise<string>;
+  listInvites(): Promise<Invite[]>;
+  revokeInvite(code: string): Promise<void>;
 }
+export interface Invite { code: string; note: string | null; createdAt: string; expiresAt: string; usedBy: string | null; usedAt: string | null; revoked: boolean }
 
 export interface FeedItem { username: string; variantId: string; serial: number | null; createdAt: string }
 export interface PublicProfile { username: string; packsOpened: number; unique: number; showcase: { variantId: string; serial: number | null }[] }

@@ -2,6 +2,7 @@ import { AnimatePresence } from 'framer-motion';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Intro, Splash, introSeen } from './components/Intro';
 import { resumeMusicIfWanted } from './lib/music';
+import { inviteOnly } from './lib/invite';
 import { PackOpening } from './components/PackOpening';
 import { useOnline } from './components/OnlineOnly';
 import { Dock, Toasts, TopBar } from './components/Shell';
@@ -31,7 +32,7 @@ function useBoot() {
         if (mode === 'online' && supabase) {
           const { data } = await supabase.auth.getSession();
           if (data.session) await start('online');
-        } else if (mode === 'local') await start('local');
+        } else if (mode === 'local' && !inviteOnly()) await start('local');
       } catch { /* hors-ligne : retour à l'accueil */ }
       await new Promise((r) => setTimeout(r, 900)); // laisse le logo s'animer
       setReady(true);

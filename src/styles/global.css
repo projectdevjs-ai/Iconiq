@@ -590,3 +590,6 @@ body.prism .app { animation: prism 8s linear infinite; }
 .intro-slide { display: flex; flex-direction: column; align-items: center; gap: 12px; }
 .intro-art { height: 230px; display: grid; place-items: center; margin-bottom: 10px; }
 .intro-skip { position: absolute; top: calc(var(--safe-top) + 16px); right: 16px; font-weight: 700; }
+
+.invite-link { display: flex; gap: 10px; align-items: center; justify-content: space-between; padding: 10px 12px; border-radius: 12px; background: rgba(0,0,0,.35); border: 1px dashed rgba(255,204,77,.5); font-size: 12px; cursor: pointer; min-width: 0; }
+.invite-link b { color: var(--gold); flex: none; }
