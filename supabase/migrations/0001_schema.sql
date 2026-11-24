@@ -5,6 +5,14 @@
 --  et tirent l'aléatoire côté serveur (pgcrypto).
 -- ════════════════════════════════════════════════════════════════════
 create extension if not exists pgcrypto;
+-- Supabase installe pgcrypto dans le schéma « extensions » : on l'expose dans public
+do $$ begin
+  if not exists (select 1 from pg_proc p join pg_namespace n on n.oid = p.pronamespace where p.proname = 'gen_random_bytes' and n.nspname = 'public') then
+    create function public.gen_random_bytes(int) returns bytea language sql volatile
+      as 'select extensions.gen_random_bytes($1)';
+  end if;
+exception when others then null;
+end $$;
 
 -- ─── Configuration & catalogue (remplis par seed.sql) ───────────────
 create table if not exists game_config (
