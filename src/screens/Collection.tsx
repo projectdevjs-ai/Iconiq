@@ -1,7 +1,8 @@
 import { motion } from 'framer-motion';
 import { useMemo, useState } from 'react';
 import { RARITIES, RARITY, type RarityId } from '../config/game';
-import { CHARACTERS, VARIANTS, VARIANT_BY_ID } from '../data/catalog';
+import { CHARACTERS, VARIANTS, VARIANT_BY_ID, isMysteryRarity } from '../data/catalog';
+import { rewardState, rewardText } from '../engine/rewards';
 import { Card } from '../components/Card';
 import { CardDetail } from '../components/CardDetail';
 import { Sheet } from '../components/Shell';
@@ -9,6 +10,8 @@ import { sfx } from '../lib/fx';
 import { useGame } from '../store/game';
 
 type Own = 'all' | 'owned' | 'missing' | 'dupes';
+type Sort = 'rarity' | 'name' | 'recent' | 'serial';
+const SORTS: Record<Sort, string> = { rarity: 'Rareté', name: 'Nom', recent: 'Récentes', serial: 'N° de série' };
 
 export function Collection() {
   const cards = useGame((s) => s.cards);
@@ -22,6 +25,16 @@ export function Collection() {
   const [q, setQ] = useState('');
   const [recycleOpen, setRecycleOpen] = useState(false);
   const [maxR, setMaxR] = useState<RarityId>('rare');
+  const [view, setView] = useState<'grid' | 'album'>(() => { try { return (localStorage.getItem('iconiq-coll-view') as 'grid' | 'album') || 'grid'; } catch { return 'grid'; } });
+  const [sort, setSort] = useState<Sort>('rarity');
+  const profile = useGame((s) => s.profile)!;
+  const claim = useGame((s) => s.claim);
+  const setViewP = (v: 'grid' | 'album') => { setView(v); try { localStorage.setItem('iconiq-coll-view', v); } catch { /* */ } };
+  const lastGot = useMemo(() => {
+    const m = new Map<string, string>();
+    for (const c of cards) if ((m.get(c.variantId) ?? '') < c.obtainedAt) m.set(c.variantId, c.obtainedAt);
+    return m;
+  }, [cards]);
 
   const counts = useMemo(() => {
     const m = new Map<string, number>();
@@ -43,7 +56,13 @@ export function Collection() {
     if (own === 'dupes' && n < 2) return false;
     if (q && !(v.characterName + ' ' + v.title).toLowerCase().includes(q.toLowerCase())) return false;
     return true;
-  }).sort((a, b) => RARITY[b.rarity].rank - RARITY[a.rarity].rank || a.characterName.localeCompare(b.characterName));
+  }).sort((a, b) => {
+    if (sort === 'name') return a.characterName.localeCompare(b.characterName) || RARITY[a.rarity].rank - RARITY[b.rarity].rank;
+    if (sort === 'recent') return (lastGot.get(b.id) ?? '').localeCompare(lastGot.get(a.id) ?? '');
+    if (sort === 'serial') return (serialOf.get(a.id) ?? 1e9) - (serialOf.get(b.id) ?? 1e9) || RARITY[b.rarity].rank - RARITY[a.rarity].rank;
+    return RARITY[b.rarity].rank - RARITY[a.rarity].rank || a.characterName.localeCompare(b.characterName);
+  });
+  const albumDone = CHARACTERS.filter((c) => { const st = rewardState('album:' + c.id, profile, profile.progress, cards); return st.done && !st.claimed; }).length;
 
   const preview = useMemo(() => {
     let n = 0, gain = 0;
@@ -76,8 +95,18 @@ export function Collection() {
       </div>
       <div className="bar" style={{ margin: '14px 0 16px' }}><i style={{ width: `${(owned / VARIANTS.length) * 100}%` }} /></div>
 
+      <div className="seg" role="tablist" style={{ marginBottom: 12 }}>
+        <button role="tab" aria-selected={view === 'grid'} className={view === 'grid' ? 'on' : ''} onClick={() => { sfx.tap(); setViewP('grid'); }}>🃏 Cartes</button>
+        <button role="tab" aria-selected={view === 'album'} className={view === 'album' ? 'on' : ''} onClick={() => { sfx.tap(); setViewP('album'); }}>📖 Album{albumDone > 0 && <span className="badge-dot" style={{ position: 'static', marginLeft: 6 }}>{albumDone}</span>}</button>
+      </div>
+      {view === 'album' ? <Album onOpen={(id) => go('collection', id)} claim={claim} /> : <>
       <input className="field" placeholder="🔎 Rechercher un personnage…" value={q} onChange={(e) => setQ(e.target.value)} style={{ marginBottom: 12, height: 44 }} />
 
+      <div className="chips">
+        {(Object.keys(SORTS) as Sort[]).map((k) => (
+          <button key={k} className={`chip ${sort === k ? 'on' : ''}`} onClick={() => { sfx.tap(); setSort(k); }}>↕ {SORTS[k]}</button>
+        ))}
+      </div>
       <div className="chips">
         {(['all', 'owned', 'missing', 'dupes'] as Own[]).map((o) => (
           <button key={o} className={`chip ${own === o ? 'on' : ''}`} onClick={() => { sfx.tap(); setOwn(o); }}>
@@ -112,7 +141,7 @@ export function Collection() {
                   <Card variantId={v.id} serial={serialOf.get(v.id)} count={n} onClick={() => { sfx.tap(); go('collection', v.id); }} />
                 ) : (
                   <button className="locked-card" style={{ width: '100%', borderColor: RARITY[v.rarity].color + '66' }} onClick={() => { sfx.tap(); go('collection', v.id); }}>
-                    <span><b>?</b>{v.characterName}<br /><span style={{ color: RARITY[v.rarity].color }}>{RARITY[v.rarity].label}</span></span>
+                    <span><b>?</b>{isMysteryRarity(v.rarity) ? '???' : v.characterName}<br /><span style={{ color: RARITY[v.rarity].color }}>{RARITY[v.rarity].label}</span></span>
                   </button>
                 )}
               </motion.div>
@@ -120,6 +149,8 @@ export function Collection() {
           })}
         </div>
       )}
+
+      </>}
 
       <CardDetail variantId={param && VARIANT_BY_ID[param] ? param : null} onClose={() => go('collection')} />
 
@@ -145,6 +176,45 @@ export function Collection() {
           </tbody>
         </table>
       </Sheet>
+    </div>
+  );
+}
+
+function Album({ onOpen, claim }: { onOpen(id: string): void; claim(key: string): Promise<unknown> }) {
+  const cards = useGame((s) => s.cards);
+  const profile = useGame((s) => s.profile)!;
+  const owned = useMemo(() => new Set(cards.map((c) => c.variantId)), [cards]);
+  const done = CHARACTERS.filter((c) => c.variants.every((v) => owned.has(v.id))).length;
+  return (
+    <div style={{ display: 'grid', gap: 16 }}>
+      <p className="sub">Complète toutes les versions d’un personnage pour gagner un bonus. {done}/{CHARACTERS.length} personnages complets.</p>
+      {CHARACTERS.map((ch) => {
+        const st = rewardState('album:' + ch.id, profile, profile.progress, cards);
+        return (
+          <section key={ch.id} className="glass album-page">
+            <div className="row" style={{ justifyContent: 'space-between' }}>
+              <div style={{ minWidth: 0 }}>
+                <div style={{ fontFamily: 'var(--font-display)', fontWeight: 800 }}>{ch.name}</div>
+                <div className="sub num" style={{ fontSize: 12 }}>{st.value}/{st.goal} versions</div>
+              </div>
+              {st.claimed ? <span className="pill" style={{ color: 'var(--ok)' }}>✓ Complété</span>
+                : <button className={`btn sm ${st.done ? 'gold' : 'ghost'}`} disabled={!st.done} onClick={() => claim('album:' + ch.id)}>🎁 {rewardText(st.reward)}</button>}
+            </div>
+            <div className="bar" style={{ margin: '10px 0 12px' }}><i style={{ width: `${(st.value / st.goal) * 100}%` }} /></div>
+            <div className="album-row">
+              {ch.variants.map((v) => {
+                const has = owned.has(v.id);
+                const myst = !has && isMysteryRarity(v.rarity);
+                return (
+                  <button key={v.id} className="album-slot" onClick={() => { sfx.tap(); onOpen(v.id); }}>
+                    <Card variantId={v.id} dim={!has && !myst} mystery={myst} interactive={false} />
+                  </button>
+                );
+              })}
+            </div>
+          </section>
+        );
+      })}
     </div>
   );
 }

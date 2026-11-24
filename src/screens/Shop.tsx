@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import { GEM_BUNDLES, PACKS, PITY } from '../config/game';
-import { PackArt } from '../components/BoosterPack';
+import { PackRow } from '../components/PackRow';
 import { displayedOdds } from '../engine/rules';
 import type { OnlineFeatures } from '../engine/types';
 import { sfx } from '../lib/fx';
@@ -53,24 +53,8 @@ export function Shop() {
 
       <h2 className="h2">🎴 Packs</h2>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 14 }}>
-        {PACKS.map((p, i) => (
-          <motion.div key={p.id} className="glass" style={{ padding: 16, display: 'flex', gap: 16 }} initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.06 }}>
-            <motion.div style={{ width: 92, flex: 'none' }} whileHover={{ rotate: -4, scale: 1.05 }}>
-              <div className="tcg" style={{ aspectRatio: '5/7' }}><PackArt name="" accent={p.accent} /></div>
-            </motion.div>
-            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 8 }}>
-              <div style={{ fontWeight: 800, fontSize: 17 }}>{p.name}</div>
-              <div className="sub" style={{ fontSize: 12 }}>{p.description}</div>
-              <div className="spacer" />
-              {p.costCredits != null && (
-                <button className="btn sm gold" disabled={busy || profile.credits < p.costCredits} onClick={() => { sfx.tap(); begin(p.id, 'credits'); }}>🪙 {p.costCredits}</button>
-              )}
-              {online && p.costGems != null && (
-                <button className="btn sm" disabled={busy || profile.gems < p.costGems} onClick={() => { sfx.tap(); begin(p.id, 'gems'); }}>💎 {p.costGems}</button>
-              )}
-            </div>
-          </motion.div>
-        ))}
+        {PACKS.map((p) => <PackRow key={p.id + 'c'} pack={p} currency="credits" />)}
+        {online && PACKS.map((p) => <PackRow key={p.id + 'g'} pack={p} currency="gems" />)}
       </div>
 
       <h2 className="h2">💎 Gemmes</h2>

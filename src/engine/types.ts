@@ -22,7 +22,11 @@ export interface Profile {
   pityEpic: number;
   pityLegend: number;
   packsOpened: number;
+  progress: Progress;
 }
+
+import type { Progress, Reward } from './rewards';
+export type { Progress, Reward };
 
 export interface PackResult {
   cards: OwnedCard[];
@@ -78,7 +82,10 @@ export interface PublicCard {
 export interface Backend {
   mode: Mode;
   load(): Promise<{ profile: Profile; cards: OwnedCard[] }>;
-  openPack(packId: string, currency: Currency): Promise<PackResult>;
+  openPack(packId: string, currency: Currency, count?: number): Promise<PackResult>;
+  claim(key: string): Promise<{ reward: Reward; profile: Profile; pack?: PackResult }>;
+  spinWheel(): Promise<{ index: number; reward: Reward; profile: Profile; pack?: PackResult }>;
+  setShowcase(uids: string[]): Promise<Profile>;
   recycleDuplicates(maxRarity: RarityId): Promise<{ gained: number; removed: string[]; profile: Profile }>;
   recycleCard(uid: string): Promise<{ gained: number; profile: Profile }>;
   craft(variantId: string): Promise<{ card: OwnedCard; profile: Profile }>;
@@ -106,4 +113,10 @@ export interface OnlineFeatures {
   notifications(): Promise<AppNotification[]>;
   markNotificationsRead(): Promise<void>;
   checkout(bundleId: string): Promise<string>;
+  feed(): Promise<FeedItem[]>;
+  publicProfile(username: string): Promise<PublicProfile | null>;
+  weeklyLeaderboard(): Promise<LeaderRow[]>;
 }
+
+export interface FeedItem { username: string; variantId: string; serial: number | null; createdAt: string }
+export interface PublicProfile { username: string; packsOpened: number; unique: number; showcase: { variantId: string; serial: number | null }[] }

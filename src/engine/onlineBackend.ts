@@ -1,6 +1,12 @@
 import { supabase } from '../lib/supabase';
 import type { RarityId } from '../config/game';
-import type { Backend, Currency, Listing, OnlineFeatures, OwnedCard, Profile } from './types';
+import type { Backend, Currency, FeedItem, LeaderRow, Listing, OnlineFeatures, OwnedCard, PackResult, Profile, PublicProfile, Reward } from './types';
+
+type RawPack = { cards: (OwnedCard & { isNew: boolean })[]; profile: Profile };
+function norm(r: RawPack | null | undefined): PackResult | undefined {
+  if (!r) return undefined;
+  return { cards: r.cards, newVariantIds: [...new Set(r.cards.filter((c) => c.isNew).map((c) => c.variantId))], profile: r.profile };
+}
 
 async function rpc<T>(fn: string, args?: Record<string, unknown>): Promise<T> {
   const { data, error } = await supabase!.rpc(fn, args);
@@ -14,11 +20,21 @@ export class OnlineBackend implements Backend, OnlineFeatures {
 
   load() { return rpc<{ profile: Profile; cards: OwnedCard[] }>('get_state'); }
 
-  async openPack(packId: string, currency: Currency) {
-    const r = await rpc<{ cards: (OwnedCard & { isNew: boolean })[]; profile: Profile }>('open_pack', { p_pack: packId, p_currency: currency });
-    const newVariantIds = [...new Set(r.cards.filter((c) => c.isNew).map((c) => c.variantId))];
-    return { cards: r.cards, newVariantIds, profile: r.profile };
+  async openPack(packId: string, currency: Currency, count = 1) {
+    const r = await rpc<RawPack>('open_pack', { p_pack: packId, p_currency: currency, p_count: count });
+    return norm(r)!;
   }
+  async claim(key: string) {
+    return rpc<{ reward: Reward; profile: Profile }>('claim_reward', { p_key: key });
+  }
+  async spinWheel() {
+    const r = await rpc<{ index: number; reward: Reward; profile: Profile; pack: RawPack | null }>('spin_wheel');
+    return { ...r, pack: norm(r.pack) };
+  }
+  setShowcase(uids: string[]) { return rpc<Profile>('set_showcase', { p_uids: uids }); }
+  feed() { return rpc<FeedItem[]>('list_feed'); }
+  publicProfile(username: string) { return rpc<PublicProfile | null>('public_profile', { p_username: username }); }
+  weeklyLeaderboard() { return rpc<LeaderRow[]>('leaderboard_week'); }
   recycleDuplicates(maxRarity: RarityId) { return rpc<{ gained: number; removed: string[]; profile: Profile }>('recycle_duplicates', { p_max_rarity: maxRarity }); }
   recycleCard(uid: string) { return rpc<{ gained: number; profile: Profile }>('recycle_card', { p_uid: uid }); }
   craft(variantId: string) { return rpc<{ card: OwnedCard; profile: Profile }>('craft_card', { p_variant: variantId }); }

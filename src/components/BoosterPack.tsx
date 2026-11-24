@@ -4,6 +4,17 @@ import { sfx } from '../lib/fx';
 import { useTilt } from '../lib/tilt';
 import type { ParticlesHandle } from './Particles';
 import { CardBack } from './Card';
+import { VARIANTS, type FlatVariant } from '../data/catalog';
+import { cardImage } from '../lib/art';
+
+/** 3 visuels de cartes rares pour illustrer le sachet. */
+function packFaces(characters?: string[]): FlatVariant[] {
+  const pool = VARIANTS.filter((v) => v.fullCard && (!characters || characters.includes(v.characterId)) && v.rarity !== 'secrete' && v.rarity !== 'mythique');
+  const seen = new Set<string>();
+  const out: FlatVariant[] = [];
+  for (const v of [...pool].reverse()) if (!seen.has(v.characterId)) { seen.add(v.characterId); out.push(v); if (out.length === 3) break; }
+  return out;
+}
 
 /**
  * Booster à découper au doigt.
@@ -18,6 +29,7 @@ interface Props {
   accent: string;
   /** couleur de la lumière qui fuit de la déchirure (indice de rareté) */
   glow: string;
+  characters?: string[];
   particles: React.RefObject<ParticlesHandle>;
   onTorn(): void;
 }
@@ -26,7 +38,7 @@ const LINE_Y = 0.13; // position de la ligne de découpe (fraction de la hauteur
 const BAND = 0.07;   // tolérance verticale du doigt
 const STEPS = 100;
 
-export function BoosterPack({ name, accent, glow, particles, onTorn }: Props) {
+export function BoosterPack({ name, accent, glow, characters, particles, onTorn }: Props) {
   const box = useRef<HTMLDivElement>(null);
   const tiltRef = useRef<HTMLDivElement>(null);
   const [cut, setCut] = useState<{ x: number; y: number }[]>([]);
@@ -138,7 +150,7 @@ export function BoosterPack({ name, accent, glow, particles, onTorn }: Props) {
 
   useEffect(() => { shake.start({ y: [0, -8, 0], transition: { duration: 3, repeat: Infinity, ease: 'easeInOut' } }); }, [shake]);
 
-  const art = <PackArt name={name} accent={accent} />;
+  const art = <PackArt name={name} accent={accent} characters={characters} />;
 
   return (
     <motion.div animate={shake} style={{ width: 'min(70vw, 300px)', touchAction: 'none' }}>
@@ -206,9 +218,11 @@ export function BoosterPack({ name, accent, glow, particles, onTorn }: Props) {
   );
 }
 
-export function PackArt({ name, accent }: { name: string; accent: string }) {
+export function PackArt({ name, accent, characters }: { name: string; accent: string; characters?: string[] }) {
+  const faces = packFaces(characters);
   return (
     <div className="pack-art" style={{ '--pa': accent } as CSSProperties}>
+      <div className="pack-faces">{faces.map((v, i) => <img key={v.id} src={cardImage(v)} alt="" draggable={false} style={{ '--i': i - 1, '--y': Math.abs(i - 1) } as CSSProperties} />)}</div>
       <div className="pack-crimp top" />
       <div className="pack-foil" />
       <div className="pack-rings" />

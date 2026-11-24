@@ -5,7 +5,7 @@
     "dev": "vite --host",
     "build": "tsc && vite build",
     "preview": "vite preview --host",
-    "seed": "node --experimental-strip-types --no-warnings scripts/gen-seed.mjs",
+    "seed": "node scripts/gen-seed.mjs",
     "icons": "node scripts/gen-icons.mjs",
     "build:demo": "vite build --mode embed"
   },

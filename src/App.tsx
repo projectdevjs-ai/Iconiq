@@ -1,6 +1,7 @@
 import { AnimatePresence } from 'framer-motion';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { CardBack } from './components/Card';
+import { Intro, Splash, introSeen } from './components/Intro';
+import { resumeMusicIfWanted } from './lib/music';
 import { PackOpening } from './components/PackOpening';
 import { useOnline } from './components/OnlineOnly';
 import { Dock, Toasts, TopBar } from './components/Shell';
@@ -32,6 +33,7 @@ function useBoot() {
           if (data.session) await start('online');
         } else if (mode === 'local') await start('local');
       } catch { /* hors-ligne : retour à l'accueil */ }
+      await new Promise((r) => setTimeout(r, 900)); // laisse le logo s'animer
       setReady(true);
     })();
   }, [start]);
@@ -65,6 +67,12 @@ export default function App() {
   const api = useOnline();
   const [notifs, setNotifs] = useState<AppNotification[]>([]);
   const taps = useRef<number[]>([]);
+  const [intro, setIntro] = useState(() => !introSeen());
+  useEffect(() => {
+    const once = () => { resumeMusicIfWanted(); removeEventListener('pointerdown', once); };
+    addEventListener('pointerdown', once);
+    return () => removeEventListener('pointerdown', once);
+  }, []);
 
   // Notifications temps réel (en ligne)
   const loadNotifs = useCallback(() => { api?.notifications().then(setNotifs).catch(() => {}); }, [api]);
@@ -113,9 +121,7 @@ export default function App() {
 
   if (!ready) {
     return (
-      <div className="app" style={{ display: 'grid', placeItems: 'center' }}>
-        <div style={{ width: 120, animation: 'pulse 0.9s ease-in-out infinite alternate' }}><CardBack /></div>
-      </div>
+      <div className="app"><Splash /></div>
     );
   }
 
@@ -141,6 +147,7 @@ export default function App() {
           <AnimatePresence>{opening && <PackOpening key="opening" />}</AnimatePresence>
         </>
       )}
+      <AnimatePresence>{intro && <Intro key="intro" onDone={() => setIntro(false)} />}</AnimatePresence>
       <Toasts />
     </div>
   );

@@ -2,7 +2,8 @@ import { create } from 'zustand';
 import type { RarityId } from '../config/game';
 import { LocalBackend } from '../engine/localBackend';
 import { OnlineBackend } from '../engine/onlineBackend';
-import type { Backend, Currency, OwnedCard, PackResult, Profile } from '../engine/types';
+import type { Backend, Currency, OwnedCard, PackResult, Profile, Reward } from '../engine/types';
+import { rewardText } from '../engine/rewards';
 import { sfx } from '../lib/fx';
 
 export type Route = 'home' | 'collection' | 'shop' | 'trade' | 'market' | 'battle' | 'profile' | 'showroom';
@@ -15,14 +16,18 @@ interface State {
   cards: OwnedCard[];
   route: Route;
   routeParam: string | null;
-  opening: { packId: string; currency: Currency; result: PackResult | null } | null;
+  opening: { packId: string; currency: Currency | 'reward'; count: number; result: PackResult | null } | null;
   toasts: Toast[];
   busy: boolean;
   start(mode: 'online' | 'local'): Promise<void>;
   signOut(): void;
   go(route: Route, param?: string | null): void;
   toast(text: string, kind?: Toast['kind']): void;
-  beginOpening(packId: string, currency: Currency): Promise<void>;
+  beginOpening(packId: string, currency: Currency, count?: number): Promise<void>;
+  showPack(result: PackResult): void;
+  claim(key: string): Promise<Reward | null>;
+  spinWheel(): Promise<{ index: number; reward: Reward; pack?: PackResult } | null>;
+  setShowcase(uids: string[]): Promise<void>;
   finishOpening(): void;
   recycleDuplicates(max: RarityId): Promise<number>;
   recycleCard(uid: string): Promise<void>;
@@ -82,12 +87,12 @@ export const useGame = create<State>((set, get) => {
       set((s) => ({ toasts: [...s.toasts, { id, text, kind }] }));
       setTimeout(() => set((s) => ({ toasts: s.toasts.filter((t) => t.id !== id) })), 3800);
     },
-    async beginOpening(packId, currency) {
+    async beginOpening(packId, currency, count = 1) {
       const { backend, busy } = get();
       if (!backend || busy) return;
-      set({ busy: true, opening: { packId, currency, result: null } });
+      set({ busy: true, opening: { packId, currency, count, result: null } });
       try {
-        const result = await backend.openPack(packId, currency);
+        const result = await backend.openPack(packId, currency, count);
         set((s) => ({
           profile: result.profile,
           cards: [...s.cards, ...result.cards.map(({ uid, variantId, serial, obtainedAt }) => ({ uid, variantId, serial, obtainedAt, locked: false }))],
@@ -101,6 +106,29 @@ export const useGame = create<State>((set, get) => {
       }
     },
     finishOpening() { set({ opening: null }); },
+    showPack(result) {
+      set((s) => ({ profile: result.profile, cards: [...s.cards, ...result.cards.map(({ uid, variantId, serial, obtainedAt }) => ({ uid, variantId, serial, obtainedAt, locked: false }))],
+        opening: { packId: 'standard', currency: 'reward', count: 1, result } }));
+    },
+    async claim(key) {
+      try {
+        const r = await get().backend!.claim(key);
+        set({ profile: r.profile });
+        sfx.coin();
+        get().toast(`🎁 +${rewardText(r.reward)}`, 'success');
+        return r.reward;
+      } catch (e) { fail(e); return null; }
+    },
+    async spinWheel() {
+      try {
+        const r = await get().backend!.spinWheel();
+        set({ profile: r.profile });
+        return r;
+      } catch (e) { fail(e); return null; }
+    },
+    async setShowcase(uids) {
+      try { set({ profile: await get().backend!.setShowcase(uids) }); } catch (e) { fail(e); }
+    },
     async recycleDuplicates(max) {
       const b = get().backend!;
       try {

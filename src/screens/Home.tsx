@@ -4,6 +4,11 @@ import { PACKS, PITY, RARITY } from '../config/game';
 import { VARIANTS, VARIANT_BY_ID } from '../data/catalog';
 import { dailyCredits, dailyStatus } from '../engine/rules';
 import { PackArt } from '../components/BoosterPack';
+import { PackRow } from '../components/PackRow';
+import { WheelSheet } from '../components/Wheel';
+import { useOnline } from '../components/OnlineOnly';
+import { QUESTS, dayKey, questKey, rewardState, rewardText } from '../engine/rewards';
+import type { FeedItem } from '../engine/types';
 import { Card } from '../components/Card';
 import { sfx } from '../lib/fx';
 import { useTilt } from '../lib/tilt';
@@ -59,8 +64,14 @@ export function Home() {
   const cooldown = 20 * 3600_000;
   const nextStreak = daily.ready ? profile.streak + 1 : profile.streak;
 
+  const [wheel, setWheel] = useState(false);
+  const api = useOnline();
+  const [feed, setFeed] = useState<FeedItem[]>([]);
+  useEffect(() => { api?.feed().then(setFeed).catch(() => {}); }, [api]);
+
   return (
     <div className="wrap">
+      <WheelSheet open={wheel} onClose={() => setWheel(false)} />
       <motion.p className="sub" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}>Salut {profile.username} 👋</motion.p>
       <motion.h1 className="h1" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }}>
         Qui vas-tu<br />tirer aujourd’hui ?
@@ -77,7 +88,11 @@ export function Home() {
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: 18 }}>Booster du jour</div>
           <p className="sub" style={{ fontSize: 13, margin: '4px 0 10px' }}>
-            🔥 Série : <b style={{ color: '#fff' }}>{profile.streak} jour{profile.streak > 1 ? 's' : ''}</b><br />
+            🔥 Série : <b style={{ color: '#fff' }}>{profile.streak} jour{profile.streak > 1 ? 's' : ''}</b>
+            <span className="streak">{Array.from({ length: 7 }, (_, i) => {
+              const inCycle = profile.streak % 7 === 0 && profile.streak > 0 && !daily.ready ? 7 : profile.streak % 7;
+              return <i key={i} className={i < inCycle ? 'on' : ''}>{i === 6 ? '🎁' : ''}</i>;
+            })}</span>
             +{dailyCredits(Math.max(1, nextStreak))} 🪙 bonus inclus
           </p>
           {daily.ready ? (
@@ -107,22 +122,32 @@ export function Home() {
         </div>
       </div>
 
+      {/* Quêtes + roue */}
+      <h2 className="h2">🎯 Défis du jour</h2>
+      <Quests onWheel={() => setWheel(true)} />
+
       {/* Packs */}
-      <h2 className="h2">🎴 Ouvrir un pack</h2>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 12 }}>
-        {PACKS.map((p) => (
-          <motion.button key={p.id} whileTap={{ scale: 0.97 }} className="glass" disabled={busy || p.costCredits == null || profile.credits < p.costCredits}
-            onClick={() => { sfx.tap(); begin(p.id, 'credits'); }}
-            style={{ padding: 14, display: 'flex', gap: 14, alignItems: 'center', textAlign: 'left', opacity: profile.credits < (p.costCredits ?? Infinity) ? 0.5 : 1 }}>
-            <div style={{ width: 62, flex: 'none' }}><div className="tcg" style={{ aspectRatio: '5/7' }}><PackArt name="" accent={p.accent} /></div></div>
-            <div style={{ flex: 1 }}>
-              <div style={{ fontWeight: 800 }}>{p.name}</div>
-              <div className="sub" style={{ fontSize: 12 }}>{p.description}</div>
-              <div className="pill" style={{ marginTop: 8, height: 28, color: 'var(--gold)' }}>🪙 <span style={{ color: '#fff' }}>{p.costCredits}</span></div>
-            </div>
-          </motion.button>
-        ))}
+      <h2 className="h2">🎴 Ouvrir des packs</h2>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 12 }}>
+        {[...PACKS].sort((a, b) => Number(!!b.endsAt) - Number(!!a.endsAt)).map((p) => <PackRow key={p.id} pack={p} currency="credits" />)}
       </div>
+
+      {feed.length > 0 && (
+        <>
+          <h2 className="h2">📡 En direct de la communauté</h2>
+          <div className="feed">
+            {feed.slice(0, 8).map((f, i) => (
+              <div key={i} className="feed-item">
+                <div style={{ width: 44, flex: 'none' }}><Card variantId={f.variantId} serial={f.serial} interactive={false} /></div>
+                <div style={{ minWidth: 0 }}>
+                  <b>{f.username}</b> a tiré <span style={{ color: RARITY[VARIANT_BY_ID[f.variantId]?.rarity ?? 'commune'].color, fontWeight: 800 }}>{VARIANT_BY_ID[f.variantId]?.characterName}</span>
+                  <div className="sub" style={{ fontSize: 11 }}>{RARITY[VARIANT_BY_ID[f.variantId]?.rarity ?? 'commune'].label}{f.serial != null ? ` · N° ${f.serial}` : ''} · {new Date(f.createdAt).toLocaleString('fr-FR', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </>
+      )}
 
       {/* Collection */}
       <h2 className="h2">📚 Ta collection</h2>
@@ -151,6 +176,37 @@ export function Home() {
           </div>
         </>
       )}
+    </div>
+  );
+}
+
+function Quests({ onWheel }: { onWheel(): void }) {
+  const profile = useGame((s) => s.profile)!;
+  const cards = useGame((s) => s.cards);
+  const claim = useGame((s) => s.claim);
+  const wheelUsed = profile.progress.wheelDay === dayKey();
+  return (
+    <div className="glass" style={{ padding: 6 }}>
+      <button className="quest wheel-quest" onClick={() => { sfx.tap(); onWheel(); }}>
+        <span className="quest-ico">🎡</span>
+        <span style={{ flex: 1, textAlign: 'left' }}><b>Roue de la chance</b><br /><span className="sub" style={{ fontSize: 12 }}>{wheelUsed ? 'Déjà tournée, reviens demain' : 'Un lancer gratuit t’attend'}</span></span>
+        {!wheelUsed && <span className="badge-dot" style={{ position: 'static' }}>1</span>}
+      </button>
+      {QUESTS.map((q) => {
+        const key = questKey(q.id);
+        const st = rewardState(key, profile, profile.progress, cards);
+        return (
+          <div key={q.id} className="quest">
+            <span className="quest-ico">{st.claimed ? '✅' : st.done ? '🎁' : '🎯'}</span>
+            <span style={{ flex: 1, minWidth: 0 }}>
+              <b style={{ fontSize: 14 }}>{q.label}</b>
+              <div className="bar" style={{ height: 5, marginTop: 6 }}><i style={{ width: `${(st.value / st.goal) * 100}%` }} /></div>
+            </span>
+            {st.claimed ? <span className="sub num" style={{ fontSize: 12 }}>fait</span>
+              : <button className={`btn sm ${st.done ? 'gold' : 'ghost'}`} disabled={!st.done} onClick={() => claim(key)}>{st.done ? rewardText(q.reward) : `${st.value}/${st.goal}`}</button>}
+          </div>
+        );
+      })}
     </div>
   );
 }

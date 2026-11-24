@@ -1,6 +1,6 @@
 import { memo, useRef, type CSSProperties } from 'react';
 import { RARITY } from '../config/game';
-import { VARIANT_BY_ID, cardRatio } from '../data/catalog';
+import { VARIANT_BY_ID, cardFinish, cardRatio } from '../data/catalog';
 import { cardImage } from '../lib/art';
 import { useTilt } from '../lib/tilt';
 
@@ -11,13 +11,15 @@ interface Props {
   isNew?: boolean;
   count?: number;
   dim?: boolean;
+  /** silhouette mystère (carte rare non possédée) */
+  mystery?: boolean;
   strength?: number;
   className?: string;
   style?: CSSProperties;
   onClick?: () => void;
 }
 
-export const Card = memo(function Card({ variantId, serial, interactive = true, isNew, count, dim, strength = 16, className = '', style, onClick }: Props) {
+export const Card = memo(function Card({ variantId, serial, interactive = true, isNew, count, dim, mystery, strength = 16, className = '', style, onClick }: Props) {
   const ref = useRef<HTMLDivElement>(null);
   useTilt(ref, interactive && !dim, strength);
   const v = VARIANT_BY_ID[variantId];
@@ -26,12 +28,13 @@ export const Card = memo(function Card({ variantId, serial, interactive = true, 
   return (
     <div
       ref={ref}
-      className={`tcg ${dim ? 'dim' : ''} ${className}`}
+      className={`tcg ${dim ? 'dim' : ''} ${mystery ? 'mystery' : ''} ${className}`}
       data-rank={r.rank}
+      data-finish={cardFinish(v)}
       style={{ '--rc': r.color, '--rg': r.glow, '--ar': cardRatio(v), ...style } as CSSProperties}
       onClick={onClick}
       role={onClick ? 'button' : undefined}
-      aria-label={`${v.characterName} — ${v.title} (${r.label})`}
+      aria-label={mystery ? `Carte ${r.label} mystère` : `${v.characterName} — ${v.title} (${r.label})`}
     >
       {v.fullCard ? (
         <div className="tcg-inner full">
@@ -40,6 +43,7 @@ export const Card = memo(function Card({ variantId, serial, interactive = true, 
           <div className="tcg-sparkle" />
           <div className="tcg-glare" />
           {serial != null && <span className="tcg-serial-badge">#{serial}</span>}
+          {mystery && <div className="tcg-mystery"><b>?</b><span>{r.label}</span></div>}
         </div>
       ) : (
       <div className="tcg-inner">

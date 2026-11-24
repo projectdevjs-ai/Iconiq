@@ -29,11 +29,22 @@ export function PackOpening() {
   const cardCtl = useAnimationControls();
   const pack = PACKS.find((p) => p.id === (opening.currency === 'daily' ? 'standard' : opening.packId))!;
   const result = opening.result;
-  const cards = result?.cards ?? [];
+  const all = result?.cards ?? [];
+  const rankOf = (vid: string) => RARITY[VARIANT_BY_ID[vid].rarity].rank;
+  // multi-ouverture : on ne révèle une à une que les Épiques et mieux (sinon la meilleure carte)
+  const cards = (() => {
+    if (opening.count <= 1) return all;
+    const big = all.filter((c) => rankOf(c.variantId) >= 3).sort((a, b) => rankOf(a.variantId) - rankOf(b.variantId));
+    return big.length ? big : [...all].sort((a, b) => rankOf(b.variantId) - rankOf(a.variantId)).slice(0, 1);
+  })();
   const cur = cards[idx];
   const curRarity = cur ? RARITY[VARIANT_BY_ID[cur.variantId].rarity] : null;
   const rank = curRarity?.rank ?? 0;
-  const isNew = (vid: string) => result?.newVariantIds.includes(vid);
+  // « NEW » seulement sur le premier exemplaire tiré d'une carte jamais possédée
+  const firstUid = new Map<string, string>();
+  for (const c of all) if (!firstUid.has(c.variantId)) firstUid.set(c.variantId, c.uid);
+  const isNewCard = (c: { uid: string; variantId: string }) => !!result?.newVariantIds.includes(c.variantId) && firstUid.get(c.variantId) === c.uid;
+  const isNew = (vid: string) => !!result?.newVariantIds.includes(vid);
   const best = Math.max(0, ...cards.map((c) => RARITY[VARIANT_BY_ID[c.variantId].rarity].rank));
 
   // pack déchiré + résultat serveur reçu → révélation
@@ -42,10 +53,17 @@ export function PackOpening() {
     else if (torn) setPhase('wait');
   }, [torn, result]);
 
-  // tension avant révélation d'une carte rare
+  // tension avant révélation d'une carte rare ; battements de cœur pour Mythique et Secrète
   useEffect(() => {
-    if (phase === 'reveal' && !flipped && rank >= 3) sfx.charge(rank);
+    if (phase !== 'reveal' || flipped) return;
+    if (rank >= 3) sfx.charge(rank);
+    if (rank < 5) return;
+    sfx.heartbeat();
+    const t = setInterval(() => sfx.heartbeat(), rank >= 6 ? 750 : 1000);
+    return () => clearInterval(t);
   }, [phase, idx, flipped, rank]);
+  const blackout = phase === 'reveal' && !flipped && rank >= 6;
+  const dupGain = cur && flipped && !isNewCard(cur) ? curRarity!.recycle : 0;
 
   const reveal = () => {
     if (!cur || flipped) return;
@@ -58,7 +76,8 @@ export function PackOpening() {
       particles.current?.burst(cx, cy, [c.color, c.glow, '#fff'], 30 + rank * 30, 6 + rank * 2);
       if (rank >= 4) { setFlash((f) => f + 1); setShakeKey((k) => k + 1); particles.current?.confetti([c.color, c.glow, '#fff', '#22e1ff', '#ff3d9a'], 60 + rank * 30); }
       if (rank >= 6) setTimeout(() => particles.current?.confetti(['#ff0080', '#ffe600', '#00ff88', '#00cfff', '#7a00ff'], 200), 500);
-    }, 260);
+      if (cur && !isNewCard(cur)) setTimeout(() => { sfx.coin(); particles.current?.sparks(cx, cy + 160, '#22e1ff', 24, 5); }, 450);
+    }, rank >= 6 ? 700 : 260);
   };
 
   const next = async (dir = 1) => {
@@ -76,17 +95,19 @@ export function PackOpening() {
     if (!p || opening.currency === 'daily') return finish();
     const canPay = opening.currency === 'credits' ? (profile?.credits ?? 0) >= (p.costCredits ?? Infinity) : (profile?.gems ?? 0) >= (p.costGems ?? Infinity);
     if (!canPay) return finish();
+    const n = opening.count;
+    const canPayN = opening.currency === 'credits' ? (profile?.credits ?? 0) >= (p.costCredits ?? Infinity) * n : (profile?.gems ?? 0) >= (p.costGems ?? Infinity) * n;
     setPhase('tear'); setTorn(false); setIdx(0); setFlipped(false);
-    begin(p.id, opening.currency);
+    begin(p.id, opening.currency as 'credits' | 'gems', canPayN ? n : 1);
   };
 
   // lumière qui fuit du sachet : trahit une Épique ou mieux
   const leak = best >= 3 ? RARITIES_BY_RANK[best].color : '#d8ecff';
   const glow = phase === 'reveal' && curRarity ? (flipped || rank >= 3 ? curRarity.color : '#8b5cff') : pack.accent;
-  const canAgain = opening.currency !== 'daily';
+  const canAgain = opening.currency === 'credits' || opening.currency === 'gems';
 
   return (
-    <motion.div className="opening" style={{ '--glow': glow } as any} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+    <motion.div className={`opening ${blackout ? 'blackout' : ''}`} style={{ '--glow': glow } as any} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
       <div className="opening-bg" />
       <div className={`rays ${phase === 'reveal' && flipped && rank >= 2 ? 'on' : ''}`} />
       <Particles ref={particles} />
@@ -101,7 +122,7 @@ export function PackOpening() {
         {(phase === 'tear' || phase === 'wait') && (
           <motion.div initial={{ y: 200, scale: 0.6, rotate: -8, opacity: 0 }} animate={{ y: 0, scale: 1, rotate: 0, opacity: 1 }} transition={{ type: 'spring', stiffness: 160, damping: 16 }}>
             {!torn ? (
-              <BoosterPack name={opening.currency === 'daily' ? 'Booster du jour' : pack.name} accent={pack.accent} glow={leak} particles={particles} onTorn={() => setTorn(true)} />
+              <BoosterPack name={opening.currency === 'daily' ? 'Booster du jour' : opening.currency === 'reward' ? 'Cadeau' : opening.count > 1 ? `${pack.name} ×${opening.count}` : pack.name} accent={pack.accent} glow={leak} characters={pack.characters} particles={particles} onTorn={() => setTorn(true)} />
             ) : (
               <motion.div animate={{ scale: [1, 1.04, 1] }} transition={{ repeat: Infinity, duration: 0.8 }} style={{ width: 'min(70vw,300px)' }}>
                 <CardBack />
@@ -149,13 +170,20 @@ export function PackOpening() {
                   >
                     <div className="face"><CardBack style={{ height: '100%', aspectRatio: 'auto' }} /></div>
                     <div className="face front">
-                      <Card variantId={cur.variantId} serial={cur.serial} isNew={flipped && isNew(cur.variantId)} interactive={flipped} strength={22} />
+                      <Card variantId={cur.variantId} serial={cur.serial} isNew={flipped && isNewCard(cur)} interactive={flipped} strength={22} />
                     </div>
                   </motion.div>
                 </motion.div>
               </motion.div>
             </div>
-            <div className="tap-hint">{flipped ? 'Glisse ou touche pour la suivante' : rank >= 3 ? '⚡ Quelque chose de puissant… touche pour révéler' : 'Touche pour révéler'}</div>
+            <AnimatePresence>
+              {dupGain > 0 && (
+                <motion.div key={'d' + idx} className="dup-banner" initial={{ y: 20, opacity: 0, scale: 0.8 }} animate={{ y: 0, opacity: 1, scale: 1 }} exit={{ opacity: 0 }} transition={{ delay: 0.45, type: 'spring' }}>
+                  Double · vaut <b>+{dupGain} ✦</b> au recyclage
+                </motion.div>
+              )}
+            </AnimatePresence>
+            <div className="tap-hint">{flipped ? 'Glisse ou touche pour la suivante' : rank >= 6 ? '… quelque chose d’inouï. Touche.' : rank >= 5 ? '💓 Ton cœur s’emballe… touche pour révéler' : rank >= 3 ? '⚡ Quelque chose de puissant… touche pour révéler' : 'Touche pour révéler'}</div>
           </>
         )}
       </div>
@@ -166,17 +194,18 @@ export function PackOpening() {
         <motion.div className="summary" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
           <h2 className="h1" style={{ textAlign: 'center' }}>{best >= 5 ? '🌌 Tirage légendaire' : best >= 3 ? '🔥 Beau tirage !' : 'Ton tirage'}</h2>
           <p className="sub" style={{ textAlign: 'center', marginBottom: 20 }}>
-            {result.newVariantIds.length ? `${result.newVariantIds.length} nouvelle${result.newVariantIds.length > 1 ? 's' : ''} carte${result.newVariantIds.length > 1 ? 's' : ''} dans ta collection` : 'Des doubles à recycler en éclats ♻️'}
+            {all.length > 5 ? `${all.length} cartes · ${result.newVariantIds.length} nouvelle${result.newVariantIds.length > 1 ? 's' : ''}` : result.newVariantIds.length ? `${result.newVariantIds.length} nouvelle${result.newVariantIds.length > 1 ? 's' : ''} carte${result.newVariantIds.length > 1 ? 's' : ''} dans ta collection` : 'Des doubles à recycler en éclats ♻️'}
           </p>
           <div className="summary-grid">
-            {cards.map((c, i) => (
-              <motion.div key={c.uid} initial={{ y: 40, opacity: 0, rotate: -6 }} animate={{ y: 0, opacity: 1, rotate: 0 }} transition={{ delay: i * 0.08, type: 'spring', stiffness: 200, damping: 18 }}>
-                <Card variantId={c.variantId} serial={c.serial} isNew={isNew(c.variantId)} />
+            {[...all].sort((a, b) => rankOf(b.variantId) - rankOf(a.variantId)).map((c, i) => (
+              <motion.div key={c.uid} initial={{ y: 40, opacity: 0, rotate: -6 }} animate={{ y: 0, opacity: 1, rotate: 0 }} transition={{ delay: Math.min(i, 25) * 0.05, type: 'spring', stiffness: 200, damping: 18 }} style={{ position: 'relative' }}>
+                <Card variantId={c.variantId} serial={c.serial} isNew={isNewCard(c)} interactive={all.length <= 10} />
+                {!isNewCard(c) && <span className="dup-chip">+{RARITY[VARIANT_BY_ID[c.variantId].rarity].recycle} ✦</span>}
               </motion.div>
             ))}
           </div>
           <div className="row" style={{ marginTop: 26, justifyContent: 'center', flexWrap: 'wrap' }}>
-            {canAgain && <button className="btn" onClick={again}>Ouvrir un autre</button>}
+            {canAgain && <button className="btn" onClick={again}>{opening.count > 1 ? `Encore ×${opening.count}` : 'Ouvrir un autre'}</button>}
             <button className="btn ghost" onClick={() => { sfx.tap(); finish(); }}>Terminer</button>
           </div>
         </motion.div>

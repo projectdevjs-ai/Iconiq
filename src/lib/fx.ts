@@ -68,6 +68,7 @@ export const sfx = {
     tone(140, 0.35, 'sawtooth', 0.07, -90); tone(880, 0.6, 'sine', 0.06, 900, 0.08);
     haptic([35, 25, 60, 20, 18]);
   },
+  heartbeat: () => { tone(55, 0.14, 'sine', 0.35, -10); tone(50, 0.16, 'sine', 0.28, -10, 0.2); haptic([40, 120, 30]); },
   pop: () => { tone(320, 0.18, 'sine', 0.1, 500); noise(0.06, 0.1, 3000); haptic(15); },
   whoosh: () => noise(0.25, 0.12, 400),
   flip: () => { noise(0.08, 0.12, 3000); tone(600, 0.08, 'triangle', 0.05, 300); haptic(10); },
@@ -78,6 +79,7 @@ export const sfx = {
     if (rank >= 3) { tone(base * 2, 0.5, 'sine', 0.08, 0, 0.12); haptic([30, 40, 30]); }
     if (rank >= 4) { [0, 0.1, 0.2, 0.3].forEach((d, i) => tone(base * (1 + i * 0.25), 0.6, 'sine', 0.07, 0, d)); haptic([40, 30, 40, 30, 120]); }
     if (rank >= 5) { tone(65, 1.2, 'sawtooth', 0.12, 40); noise(1.2, 0.15, 200); haptic([80, 50, 80, 50, 200, 50, 300]); }
+    if (rank >= 6) { [523, 659, 784, 1047, 1319, 1568].forEach((f, i) => tone(f, 1.4, 'triangle', 0.06, 0, 0.15 + i * 0.09)); tone(32, 2, 'sine', 0.3, 0, 0); }
   },
   charge: (rank: number) => { tone(110, 0.9, 'sawtooth', 0.05, 200 + rank * 120); haptic([10, 20, 10, 20, 10, 20]); },
   coin: () => { tone(988, 0.08, 'square', 0.05); tone(1319, 0.2, 'square', 0.05, 0, 0.08); haptic(12); },

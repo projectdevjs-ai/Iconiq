@@ -5,6 +5,7 @@ on conflict (id) do update set cards_per_pack = excluded.cards_per_pack, daily_c
   daily_credits = excluded.daily_credits, streak_bonus_per_day = excluded.streak_bonus_per_day, streak_bonus_max = excluded.streak_bonus_max,
   market_fee_pct = excluded.market_fee_pct, start_credits = excluded.start_credits, pity_epic_every = excluded.pity_epic_every,
   pity_legendary_every = excluded.pity_legendary_every;
+update game_config set streak_gift_every = 7, streak_gift_credits = 500, streak_gift_shards = 100 where id = 1;
 insert into rarities values ('commune', 'Commune', 0, 0.6, 5, 40, false)
 on conflict (id) do update set label = excluded.label, weight = excluded.weight, recycle = excluded.recycle, craft = excluded.craft, serialized = excluded.serialized;
 insert into rarities values ('peu_commune', 'Peu commune', 1, 0.25, 15, 100, false)
@@ -19,10 +20,37 @@ insert into rarities values ('mythique', 'Mythique', 5, 0.0025, 1500, 10000, tru
 on conflict (id) do update set label = excluded.label, weight = excluded.weight, recycle = excluded.recycle, craft = excluded.craft, serialized = excluded.serialized;
 insert into rarities values ('secrete', 'Secrète', 6, 0.0005, 5000, 40000, true)
 on conflict (id) do update set label = excluded.label, weight = excluded.weight, recycle = excluded.recycle, craft = excluded.craft, serialized = excluded.serialized;
-insert into pack_types values ('standard', 'Pack Standard', 300, 30, 'rare', true)
-on conflict (id) do update set name = excluded.name, cost_credits = excluded.cost_credits, cost_gems = excluded.cost_gems, last_slot_min = excluded.last_slot_min, active = true;
-insert into pack_types values ('prestige', 'Pack Prestige', 1200, 110, 'epique', true)
-on conflict (id) do update set name = excluded.name, cost_credits = excluded.cost_credits, cost_gems = excluded.cost_gems, last_slot_min = excluded.last_slot_min, active = true;
+insert into pack_types(id, name, cost_credits, cost_gems, last_slot_min, active, character_ids, ends_at) values ('standard', 'Pack Standard', 300, 30, 'rare', true, null, null)
+on conflict (id) do update set name = excluded.name, cost_credits = excluded.cost_credits, cost_gems = excluded.cost_gems, last_slot_min = excluded.last_slot_min, active = true, character_ids = excluded.character_ids, ends_at = excluded.ends_at;
+insert into pack_types(id, name, cost_credits, cost_gems, last_slot_min, active, character_ids, ends_at) values ('prestige', 'Pack Prestige', 1200, 110, 'epique', true, null, null)
+on conflict (id) do update set name = excluded.name, cost_credits = excluded.cost_credits, cost_gems = excluded.cost_gems, last_slot_min = excluded.last_slot_min, active = true, character_ids = excluded.character_ids, ends_at = excluded.ends_at;
+insert into pack_types(id, name, cost_credits, cost_gems, last_slot_min, active, character_ids, ends_at) values ('lopez', 'Pack Famille Lopez', 400, 40, 'rare', true, array['david-lopez','joe-lopez']::text[], '2026-12-14T23:00:00Z')
+on conflict (id) do update set name = excluded.name, cost_credits = excluded.cost_credits, cost_gems = excluded.cost_gems, last_slot_min = excluded.last_slot_min, active = true, character_ids = excluded.character_ids, ends_at = excluded.ends_at;
+delete from quests; delete from achievements; delete from wheel_prizes;
+insert into quests values ('daily', 'daily', 1, 0, 50);
+insert into quests values ('open3', 'packs', 3, 200, 0);
+insert into quests values ('recycle5', 'recycled', 5, 120, 0);
+insert into achievements values ('pack1', 'packs', 1, 100, 0);
+insert into achievements values ('pack10', 'packs', 10, 300, 0);
+insert into achievements values ('pack50', 'packs', 50, 1000, 0);
+insert into achievements values ('pack200', 'packs', 200, 4000, 0);
+insert into achievements values ('epic', 'rank', 3, 200, 0);
+insert into achievements values ('legend', 'rank', 4, 500, 0);
+insert into achievements values ('mythic', 'rank', 5, 1000, 200);
+insert into achievements values ('secret', 'rank', 6, 3000, 1000);
+insert into achievements values ('col25', 'collection', 25, 500, 0);
+insert into achievements values ('col50', 'collection', 50, 1500, 0);
+insert into achievements values ('col100', 'collection', 100, 10000, 5000);
+insert into achievements values ('streak7', 'streak', 7, 700, 0);
+insert into achievements values ('streak30', 'streak', 30, 5000, 0);
+insert into wheel_prizes values (0, 26, 100, 0, false);
+insert into wheel_prizes values (1, 20, 0, 30, false);
+insert into wheel_prizes values (2, 16, 250, 0, false);
+insert into wheel_prizes values (3, 12, 0, 100, false);
+insert into wheel_prizes values (4, 9, 500, 0, false);
+insert into wheel_prizes values (5, 8, 0, 0, true);
+insert into wheel_prizes values (6, 6, 1000, 0, false);
+insert into wheel_prizes values (7, 3, 0, 500, false);
 insert into gem_bundles values ('gems_s', 100, 199, 'Poignée de gemmes')
 on conflict (id) do update set gems = excluded.gems, price_cents = excluded.price_cents, label = excluded.label;
 insert into gem_bundles values ('gems_m', 550, 999, 'Sac de gemmes')

@@ -221,3 +221,12 @@ export const CHARACTER_BY_ID: Record<string, Character> = Object.fromEntries(CHA
 
 /** Proportions de la carte (largeur / hauteur). */
 export const cardRatio = (v: { ratio?: number }) => v.ratio ?? 2 / 3;
+
+/** Finition holographique selon le style de la carte. */
+export function cardFinish(v: { title: string; rarity: string }): 'gold' | 'rainbow' | 'normal' {
+  if (/gold|plaqu|golden|\bor\b/i.test(v.title)) return 'gold';
+  if (/spéciale|unique|ultra|hors cat|rarissime|maximum|limited|cascade|moonwalk/i.test(v.title) || v.rarity === 'secrete') return 'rainbow';
+  return 'normal';
+}
+/** Carte « mystère » : on cache les Mythiques et Secrètes tant qu'on ne les possède pas. */
+export const isMysteryRarity = (rarity: string) => rarity === 'mythique' || rarity === 'secrete';

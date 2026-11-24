@@ -68,6 +68,11 @@ export interface PackType {
   /** rareté minimum du dernier slot */
   lastSlotMin: RarityId;
   accent: string;
+  /** pack thématique : seulement ces personnages */
+  characters?: string[];
+  /** pack événement : disponible jusqu'à cette date (ISO) */
+  endsAt?: string;
+  badge?: string;
 }
 
 /**
@@ -94,7 +99,25 @@ export const PACKS: PackType[] = [
     lastSlotMin: 'epique',
     accent: '#a259ff',
   },
+  {
+    id: 'lopez',
+    name: 'Pack Famille Lopez',
+    description: 'Événement · 5 cartes David & Joe Lopez · 1 Rare ou mieux',
+    costCredits: 400,
+    costGems: 40,
+    lastSlotMin: 'rare',
+    accent: '#ff8a3d',
+    characters: ['david-lopez', 'joe-lopez'],
+    endsAt: '2026-12-14T23:00:00Z',
+    badge: 'ÉVÉNEMENT',
+  },
 ];
+
+/** Packs ouvrables en une fois (multi-ouverture). */
+export const MULTI_OPEN = [1, 5, 10] as const;
+
+/** Série : tous les 7 jours consécutifs, gros bonus. */
+export const STREAK_GIFT = { every: 7, credits: 500, shards: 100 };
 
 /** Offres de gemmes (prix en centimes) — validées côté serveur dans create-checkout. */
 export const GEM_BUNDLES = [
